@@ -1,0 +1,37 @@
+const TMDB_BASE_URL = "https://api.themoviedb.org/3"
+const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w500"
+
+const headers = {
+  Authorization: `Bearer ${process.env.TMDB_TOKEN}`,
+  "Content-Type": "application/json",
+}
+
+export type MovieListType = "popular" | "top_rated" | "now_playing" | "upcoming"
+
+export interface TMDBMovie {
+  id: number
+  title: string
+  overview: string
+  runtime: number
+  release_date: string
+  genres: { id: number; name: string }[]
+  poster_path: string | null
+}
+
+export async function fetchMovieList(type: MovieListType, page = 1) {
+  const res = await fetch(`${TMDB_BASE_URL}/movie/${type}?page=${page}`, { headers })
+  const data = await res.json()
+  return {
+    movies: data.results as { id: number; title: string }[],
+    totalPages: data.total_pages as number,
+  }
+}
+
+export async function fetchMovieDetails(tmdbId: number): Promise<TMDBMovie> {
+  const res = await fetch(`${TMDB_BASE_URL}/movie/${tmdbId}`, { headers })
+  return res.json()
+}
+
+export function getPosterUrl(posterPath: string | null): string | null {
+  return posterPath ? `${TMDB_IMAGE_BASE}${posterPath}` : null
+}

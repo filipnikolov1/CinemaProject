@@ -15,31 +15,37 @@ model User {
   id        Int       @id @default(autoincrement())
   name      String
   email     String    @unique
-  password  String    // store hashed, never plaintext
+  password  String
   role      Role      @default(USER)
   createdAt DateTime  @default(now())
   bookings  Booking[]
 }
 
 model Movie {
-  id          Int         @id @default(autoincrement())
-  title       String
-  description String?
-  duration    Int
-  genre       String?
-  posterUrl   String?
-  createdAt   DateTime    @default(now())
-  screenings  Screening[]
+  id            Int          @id @default(autoincrement())
+  externalId    String       @unique
+  title         String
+  description   String?
+  duration      Int
+  genre         String?
+  posterUrl     String?
+  releaseDate   DateTime?
+  isPopular     Boolean      @default(false)
+  isTopRated    Boolean      @default(false)
+  isNowPlaying  Boolean      @default(false)
+  isUpcoming    Boolean      @default(false)
+  createdAt     DateTime     @default(now())
+  projections   Projection[]
 }
 
 model Hall {
-  id         Int         @id @default(autoincrement())
-  name       String
-  totalSeats Int
-  screenings Screening[]
+  id          Int          @id @default(autoincrement())
+  name        String
+  totalSeats  Int
+  projections Projection[]
 }
 
-model Screening {
+model Projection {
   id        Int       @id @default(autoincrement())
   movieId   Int
   hallId    Int
@@ -51,11 +57,12 @@ model Screening {
 }
 
 model Booking {
-  id          Int       @id @default(autoincrement())
-  screeningId Int
-  userId      Int
-  seatNumber  Int
-  createdAt   DateTime  @default(now())
-  screening   Screening @relation(fields: [screeningId], references: [id])
-  user        User      @relation(fields: [userId], references: [id])
+  id           Int        @id @default(autoincrement())
+  projectionId Int
+  userId       Int
+  seatNumber   Int
+  ticketCode   String     @unique @default(cuid())
+  createdAt    DateTime   @default(now())
+  projection   Projection @relation(fields: [projectionId], references: [id])
+  user         User       @relation(fields: [userId], references: [id])
 }
