@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  name      String
+  email     String    @unique
+  password  String    // store hashed, never plaintext
+  role      Role      @default(USER)
+  createdAt DateTime  @default(now())
+  bookings  Booking[]
+}
+
+model Movie {
+  id          Int         @id @default(autoincrement())
+  title       String
+  description String?
+  duration    Int
+  genre       String?
+  posterUrl   String?
+  createdAt   DateTime    @default(now())
+  screenings  Screening[]
+}
+
+model Hall {
+  id         Int         @id @default(autoincrement())
+  name       String
+  totalSeats Int
+  screenings Screening[]
+}
+
+model Screening {
+  id        Int       @id @default(autoincrement())
+  movieId   Int
+  hallId    Int
+  startTime DateTime
+  price     Float
+  movie     Movie     @relation(fields: [movieId], references: [id])
+  hall      Hall      @relation(fields: [hallId], references: [id])
+  bookings  Booking[]
+}
+
+model Booking {
+  id          Int       @id @default(autoincrement())
+  screeningId Int
+  userId      Int
+  seatNumber  Int
+  createdAt   DateTime  @default(now())
+  screening   Screening @relation(fields: [screeningId], references: [id])
+  user        User      @relation(fields: [userId], references: [id])
+}
