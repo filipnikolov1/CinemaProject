@@ -533,3 +533,21 @@
   letter-spacing: 0.3px;
   white-space: nowrap;
 }
+
+.logoutButton {
+  font-size: 13px;
+  color: #8b949e;
+  background: none;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 5px 12px;
+  cursor: pointer;
+  font-family: inherit;
+  margin-left: 8px;
+  transition: border-color 0.15s, color 0.15s;
+
+  &:hover {
+    border-color: #f85149;
+    color: #f85149;
+  }
+}
