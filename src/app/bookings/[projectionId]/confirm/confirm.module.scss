@@ -1,0 +1,107 @@
+.page {
+  min-height: 100vh;
+  background: #0a0a0f;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  padding: 60px 24px;
+}
+
+.inner {
+  width: 100%;
+  max-width: 1280px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.checkmark {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #0f2d1a;
+  border: 1px solid #1a4d2e;
+  color: #3fb950;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 600;
+  color: #e6edf3;
+  margin: 0;
+  letter-spacing: -0.4px;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #8b949e;
+  margin: 0;
+}
+
+.tickets {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  justify-items: center;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+
+  &:has(> :only-child) {
+    grid-template-columns: 1fr;
+    max-width: 620px;
+    margin: 0 auto;
+  }
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+}
+
+.primaryButton {
+  padding: 10px 22px;
+  background: #e6edf3;
+  color: #0d1117;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background 0.15s;
+
+  &:hover { background: #fff; }
+}
+
+.secondaryButton {
+  padding: 10px 22px;
+  background: transparent;
+  color: #8b949e;
+  font-size: 13px;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: border-color 0.15s, color 0.15s;
+
+  &:hover {
+    border-color: #8b949e;
+    color: #e6edf3;
+  }
+}
