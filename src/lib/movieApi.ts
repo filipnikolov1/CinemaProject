@@ -1,5 +1,6 @@
 const TMDB_BASE_URL = "https://api.themoviedb.org/3"
 const TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w500"
+const TMDB_BACKDROP_BASE = "https://image.tmdb.org/t/p/original"
 
 const headers = {
   Authorization: `Bearer ${process.env.TMDB_TOKEN}`,
@@ -16,6 +17,7 @@ export interface TMDBMovie {
   release_date: string
   genres: { id: number; name: string }[]
   poster_path: string | null
+  backdrop_path: string | null
 }
 
 export async function fetchMovieList(type: MovieListType, page = 1) {
@@ -34,4 +36,8 @@ export async function fetchMovieDetails(tmdbId: number): Promise<TMDBMovie> {
 
 export function getPosterUrl(posterPath: string | null): string | null {
   return posterPath ? `${TMDB_IMAGE_BASE}${posterPath}` : null
+}
+
+export function getBackdropUrl(backdropPath: string | null): string | null {
+  return backdropPath ? `${TMDB_BACKDROP_BASE}${backdropPath}` : null
 }

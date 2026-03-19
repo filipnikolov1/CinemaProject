@@ -29,6 +29,7 @@ model Movie {
   duration      Int
   genre         String?
   posterUrl     String?
+  backdropUrl   String?
   releaseDate   DateTime?
   isPopular     Boolean      @default(false)
   isTopRated    Boolean      @default(false)
