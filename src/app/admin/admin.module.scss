@@ -329,6 +329,21 @@
   }
 }
 
+.badgeVip {
+  font-size: 9px;
+  font-weight: 700;
+  color: #f0a500;
+  background: #2a1f00;
+  border: 1px solid #4a3500;
+  padding: 4px 6px 2px 7.5px;
+  border-radius: 20px;
+  letter-spacing: 1px;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .addButton {
   background: #e6edf3;
   color: #0d1117;

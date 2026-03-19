@@ -37,9 +37,9 @@ function LoginForm() {
 
     if (res.ok) {
       if (data.user.role === "ADMIN") {
-        router.push("/admin")
+        router.push("/admin?success=login")
       } else {
-        router.push(redirect)
+        router.push(`${redirect}?success=login`)
       }
       router.refresh()
     } else {

@@ -2,6 +2,7 @@ import { prisma } from "@/lib/db"
 import styles from "@/app/admin/admin.module.scss"
 import { Suspense } from "react"
 import ToastFromParams from "@/components/admin/ToastFromParams"
+import { getDisplayPrice, isVipSeat } from "@/lib/vip"
 
 export default async function BookingsPage({
   searchParams,
@@ -78,7 +79,14 @@ export default async function BookingsPage({
                       })}
                     </td>
                     <td className={styles.tableTd}>{b.seatNumber}</td>
-                    <td className={styles.tableTd}>€{b.projection.price.toFixed(2)}</td>
+                    <td className={styles.tableTd}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        €{getDisplayPrice(b.projection.price, b.seatNumber, b.projection.hall.totalSeats).toFixed(2)}
+                        {isVipSeat(b.seatNumber, b.projection.hall.totalSeats) && (
+                          <span className={styles.badgeVip}>VIP</span>
+                        )}
+                      </div>
+                    </td>
                     <td className={styles.tableTd}>
                       <span className={`${styles.ticketCode} ${isPast ? styles.ticketCodePast : ""}`}>
                         {b.ticketCode.slice(0, 8).toUpperCase()}
