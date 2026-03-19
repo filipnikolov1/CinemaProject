@@ -1,15 +1,26 @@
 "use client"
-import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useState, useEffect } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
+import { Suspense } from "react"
 import Link from "next/link"
 import styles from "./login.module.scss"
+import Toast from "../../../components/admin/Toast"
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const redirect = searchParams.get("redirect") || "/"
+  const reason = searchParams.get("reason")
+
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
+  const [showAuthToast, setShowAuthToast] = useState(false)
+
+  useEffect(() => {
+    if (reason === "auth") setShowAuthToast(true)
+  }, [reason])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -28,7 +39,7 @@ export default function LoginPage() {
       if (data.user.role === "ADMIN") {
         router.push("/admin")
       } else {
-        router.push("/")
+        router.push(redirect)
       }
       router.refresh()
     } else {
@@ -39,6 +50,13 @@ export default function LoginPage() {
 
   return (
     <div className={styles.page}>
+      {showAuthToast && (
+        <Toast
+          message="Please log in to continue"
+          type="error"
+          onDone={() => setShowAuthToast(false)}
+        />
+      )}
       <div className={styles.card}>
         <div className={styles.header}>
           <h1 className={styles.title}>Welcome back</h1>
@@ -83,5 +101,13 @@ export default function LoginPage() {
         </p>
       </div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   )
 }

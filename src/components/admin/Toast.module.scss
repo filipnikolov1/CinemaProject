@@ -1,17 +1,18 @@
 @keyframes slideIn {
-  from { transform: translateY(16px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from { transform: translateX(-50%) translateY(16px); opacity: 0; }
+  to { transform: translateX(-50%) translateY(0); opacity: 1; }
 }
 
 @keyframes slideOut {
-  from { transform: translateY(0); opacity: 1; }
-  to { transform: translateY(16px); opacity: 0; }
+  from { transform: translateX(-50%) translateY(0); opacity: 1; }
+  to { transform: translateX(-50%) translateY(16px); opacity: 0; }
 }
 
 .toast {
   position: fixed;
-  bottom: 24px;
-  right: 24px;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
   background: #e6edf3;
   color: #0d1117;
   padding: 12px 20px;
