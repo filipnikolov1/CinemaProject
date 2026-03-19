@@ -7,7 +7,7 @@ import {
   MovieListType,
 } from "@/lib/movieApi"
 
-const PAGES_PER_LIST = 10
+const PAGES_PER_LIST = 1
 
 const LISTS: MovieListType[] = ["popular", "top_rated", "now_playing", "upcoming"]
 
