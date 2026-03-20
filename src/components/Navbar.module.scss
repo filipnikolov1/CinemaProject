@@ -1,0 +1,144 @@
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 48px;
+  height: 68px;
+  transition: background 0.35s ease, border-color 0.35s ease;
+  border-bottom: 1px solid transparent;
+}
+
+.navScrolled {
+  background: rgba(10, 10, 10, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.logo {
+  color: #fff;
+  font-family: var(--font-geist-sans), Arial, sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 2.5px;
+  text-decoration: none;
+  flex-shrink: 0;
+  transition: opacity 0.2s;
+
+  &:hover { opacity: 0.8; }
+}
+
+// ── Center pill ──
+// Voiceflow-style rounded container with visible background
+.pillNav {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: #1e1e1e;
+  border: 1px solid #2a2a2a;
+  border-radius: 100px;
+  padding: 4px 6px;
+}
+
+.link {
+  color: #aaa;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.2s, background 0.2s;
+  background: none;
+  border: none;
+  font-family: inherit;
+  padding: 8px 20px;
+  border-radius: 100px;
+  white-space: nowrap;
+
+  &:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.08);
+  }
+}
+
+// ── Right auth ──
+.auth {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-shrink: 0;
+}
+
+.username {
+  color: #ccc;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.loginLink {
+  color: #ccc;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s;
+
+  &:hover { color: #fff; }
+}
+
+.signupBtn {
+  background: #f5c518;
+  color: #000;
+  border: none;
+  padding: 9px 24px;
+  border-radius: 100px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: background 0.2s, transform 0.15s;
+
+  &:hover {
+    background: #daa800;
+    transform: translateY(-1px);
+  }
+}
+
+// Plain text, no border, no box
+.logoutBtn {
+  color: #888;
+  font-size: 14px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0;
+  transition: color 0.2s;
+
+  &:hover { color: #ccc; }
+}
+
+@media (max-width: 900px) {
+  .nav { padding: 0 24px; }
+
+  .pillNav {
+    position: static;
+    transform: none;
+  }
+
+  .link {
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+}
+
+@media (max-width: 600px) {
+  .pillNav { display: none; }
+}

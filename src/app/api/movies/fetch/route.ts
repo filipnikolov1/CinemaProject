@@ -4,6 +4,7 @@ import {
   fetchMovieList,
   fetchMovieDetails,
   getPosterUrl,
+  getBackdropUrl,
   MovieListType,
 } from "@/lib/movieApi"
 
@@ -50,6 +51,7 @@ export async function POST() {
               data: {
                 ...listFlag,
                 releaseDate,
+                backdropUrl: getBackdropUrl(details.backdrop_path),
               },
             })
             totalUpdated++
@@ -64,6 +66,7 @@ export async function POST() {
               duration: details.runtime ?? 0,
               genre: details.genres.map((g) => g.name).join(", "),
               posterUrl: getPosterUrl(details.poster_path),
+              backdropUrl: getBackdropUrl(details.backdrop_path),
               releaseDate,
               ...listFlag,
             },
