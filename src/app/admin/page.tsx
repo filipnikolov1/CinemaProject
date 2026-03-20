@@ -10,11 +10,14 @@ function getGreeting() {
 }
 
 export default async function AdminDashboard() {
-  const [movieCount, projectionCount, bookingCount] = await Promise.all([
-    prisma.movie.count(),
-    prisma.projection.count(),
-    prisma.booking.count(),
-  ])
+  const [movieCount, projectionCount, bookingCount, revenue] = await Promise.all([
+  prisma.movie.count(),
+  prisma.projection.count(),
+  prisma.booking.count(),
+  prisma.booking.findMany({
+    select: { projection: { select: { price: true } } }
+  }).then(b => b.reduce((sum, b) => sum + b.projection.price, 0)),
+])
 
   const upcoming = await prisma.projection.findMany({
     where: { startTime: { gte: new Date() } },
@@ -25,7 +28,7 @@ export default async function AdminDashboard() {
 
   return (
     <div>
-      {/* Hero banner */}
+
       <div className={styles.hero}>
         <div className={styles.heroBubble1} />
         <div className={styles.heroBubble2} />
@@ -48,7 +51,6 @@ export default async function AdminDashboard() {
         </div>
       </div>
 
-      {/* Stat cards */}
       <div className={styles.statsGrid}>
         <Link href="/movies" className={styles.statCard}>
           <div className={styles.statGlow} style={{ background: "#58a6ff22" }} />
@@ -60,14 +62,18 @@ export default async function AdminDashboard() {
           <p className={styles.statLabel} style={{ color: "#3fb950" }}>Projections</p>
           <p className={styles.statValue}>{projectionCount}</p>
         </Link>
-        <Link href="/admin/projections" className={styles.statCard}>
+        <Link href="/admin/bookings" className={styles.statCard}>
           <div className={styles.statGlow} style={{ background: "#f7816622" }} />
           <p className={styles.statLabel} style={{ color: "#f78166" }}>Tickets sold</p>
           <p className={styles.statValue}>{bookingCount}</p>
         </Link>
+        <Link href="/admin/bookings" className={styles.statCard}>
+          <div className={styles.statGlow} style={{ background: "#a371f722" }} />
+          <p className={styles.statLabel} style={{ color: "#a371f7" }}>Revenue</p>
+          <p className={styles.statValue}>€{revenue.toFixed(0)}</p>
+        </Link>
       </div>
 
-      {/* Upcoming projections table */}
       <div className={styles.tableCard}>
         <div className={styles.tableHeader}>
           <h2>Upcoming projections</h2>

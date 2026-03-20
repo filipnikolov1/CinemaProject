@@ -15,7 +15,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
           <AdminNavLinks />
         </div>
-        <Link href="/" className={styles.backLink}>← Back to site</Link>
       </nav>
       <Suspense fallback={<AdminLoadingSpinner />}>
         <div className={styles.content}>

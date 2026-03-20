@@ -14,13 +14,15 @@ export default function ToastFromParams({ messages }: Props) {
   const [toast, setToast] = useState<string | null>(null)
 
   useEffect(() => {
-    const success = searchParams.get("success")
-    if (success && messages[success]) {
-      setToast(messages[success])
-      // Clean the URL without triggering a reload
-      router.replace(pathname, { scroll: false })
-    }
-  }, [searchParams])
+  const success = searchParams.get("success")
+  if (success && messages[success]) {
+    setToast(messages[success])
+    const params = new URLSearchParams(searchParams.toString())
+    params.delete("success")
+    const newUrl = params.size > 0 ? `${pathname}?${params.toString()}` : pathname
+    router.replace(newUrl, { scroll: false })
+  }
+}, [searchParams])
 
   if (!toast) return null
 

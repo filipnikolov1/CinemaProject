@@ -1,0 +1,190 @@
+.ticket {
+  display: flex;
+  background: #161b22;
+  border: 1px solid #2e2e2e;
+  border-radius: 12px;
+  overflow: visible;
+  max-width: 100%;
+  width: 100%;
+  margin-top: 12px;
+  position: relative;
+}
+
+.accent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 12px;
+  height: 100%;
+  background: #e50914;
+  border-radius: 12px 0 0 12px;
+}
+
+.main {
+  flex: 1;
+  padding: 28px 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 120px;
+}
+
+.brand {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  color: #e50914;
+  margin: 0;
+}
+
+.title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #e6edf3;
+  margin: 0;
+  line-height: 1.2;
+  letter-spacing: -0.4px;
+}
+
+.meta {
+  font-size: 12px;
+  color: #8b949e;
+  margin: 0;
+  letter-spacing: 0.2px;
+}
+
+.divider {
+  width: 1px;
+  flex-shrink: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    #30363d 0px,
+    #30363d 5px,
+    transparent 5px,
+    transparent 11px
+  );
+  position: relative;
+  margin: 0;
+}
+
+.notchTop,
+.notchBottom {
+  position: absolute;
+  width: 16px;
+  height: 8px;
+  background: #0a0a0f;
+  border: 1px solid #2e2e2e;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.notchTop {
+  top: -1px;
+  border-radius: 0 0 8px 8px;
+  border-top: none;
+}
+
+.notchBottom {
+  bottom: -1px;
+  border-radius: 8px 8px 0 0;
+  border-bottom: none;
+}
+
+.stub {
+  width: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 24px 16px;
+  flex-shrink: 0;
+}
+
+.stubLabel {
+  font-size: 10px;
+  font-weight: 600;
+  color: #8b949e;
+  letter-spacing: 3px;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.stubSeat {
+  font-size: 44px;
+  font-weight: 900;
+  color: #e6edf3;
+  margin: 0;
+  line-height: 1;
+  letter-spacing: -2px;
+}
+
+.stubCode {
+  font-size: 10px;
+  color: #484f58;
+  font-family: monospace;
+  margin: 0;
+  letter-spacing: 1.5px;
+}
+
+@media (max-width: 480px) {
+  .ticket {
+    flex-direction: column;
+    border-radius: 12px;
+  }
+
+  .accent {
+    width: 100%;
+    height: 12px;
+    border-radius: 12px 12px 0 0;
+  }
+
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: repeating-linear-gradient(
+      to right,
+      #30363d 0px,
+      #30363d 5px,
+      transparent 5px,
+      transparent 11px
+    );
+  }
+
+  .notchTop,
+  .notchBottom {
+    width: 8px;
+    height: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .notchTop {
+    left: -1px;
+    border-radius: 0 8px 8px 0;
+    border-top: 1px solid #2e2e2e;
+    border-left: none;
+  }
+
+  .notchBottom {
+    left: auto;
+    right: -1px;
+    border-radius: 8px 0 0 8px;
+    border-bottom: 1px solid #2e2e2e;
+    border-right: none;
+  }
+
+  .stub {
+    width: 100%;
+    flex-direction: row;
+    justify-content: center;
+    gap: 16px;
+    padding: 16px 24px;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .stubSeat {
+    font-size: 32px;
+  }
+}
