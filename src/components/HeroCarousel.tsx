@@ -42,9 +42,7 @@ export default function HeroCarousel({ movies }: HeroCarouselProps) {
   const didMount = useRef(false)
 
   // Build padded display array: [...last PAD] + [...all] + [...first PAD]
-  const display = movies.length > 0
-    ? [...movies.slice(-PAD), ...movies, ...movies.slice(0, PAD)]
-    : []
+  const display = movies.length > 0 ? [...movies.slice(-PAD), ...movies, ...movies.slice(0, PAD)] : []
 
   // The scroll-index of the active poster in the display array
   const scrollIndex = current + PAD

@@ -1,6 +1,6 @@
 import Navbar from "@/components/Navbar"
 import HeroCarousel from "@/components/HeroCarousel"
-import InCinemaSection from "@/components/InCinemaSection"
+import NowInCinemas from "@/components/NowInCinemas"
 import UpcomingSection from "@/components/UpcomingSection"
 import { getCurrentUser } from "@/lib/getCurrentUser"
 import { prisma } from "@/lib/db"
@@ -16,18 +16,7 @@ export type LandingMovie = {
   duration: number
 }
 
-// Mock data for sections we'll upgrade later
-const inCinemas: LandingMovie[] = [
-  { id: 101, title: "Captain America: Brave New World", posterUrl: "https://image.tmdb.org/t/p/w500/pzIddUEMWhIHoJLc3kmxmPFpGeA.jpg", description: "Sam Wilson faces a global crisis as the new Captain America.", genre: "Action · Adventure", releaseDate: null, duration: 118, backdropUrl: null },
-  { id: 102, title: "Mickey 17", posterUrl: "https://image.tmdb.org/t/p/w500/edKpV1gJSKMUBkliW24LjZgzOBs.jpg", description: "An expendable worker on an ice planet dies and regenerates for dangerous missions.", genre: "Sci-Fi", releaseDate: null, duration: 137, backdropUrl: null },
-  { id: 103, title: "Sons of Dust", posterUrl: "https://image.tmdb.org/t/p/w500/sv1xJUazXeYqALzczSZ3O6nkH75.jpg", description: "Three brothers in the wild west seek revenge for their father's murder.", genre: "Western · Drama", releaseDate: null, duration: 142, backdropUrl: null },
-  { id: 104, title: "Electra", posterUrl: "https://image.tmdb.org/t/p/w500/kfL3Stsuv2wUKJUKDE1GF6DITB4.jpg", description: "A hacker discovers that her AI creation has developed a will of its own.", genre: "Thriller · Sci-Fi", releaseDate: null, duration: 115, backdropUrl: null },
-  { id: 105, title: "Butterfly", posterUrl: "https://image.tmdb.org/t/p/w500/nBNZadXqJSdt05SHLqgT0HuC5Gm.jpg", description: "A love story between two worlds that must never collide.", genre: "Romance · Drama", releaseDate: null, duration: 128, backdropUrl: null },
-  { id: 106, title: "No Days Off", posterUrl: "https://image.tmdb.org/t/p/w500/mDfJG3LC3Dqb67AZ52x3Z0jU0uB.jpg", description: "Two detectives chase the same criminal without knowing about each other.", genre: "Comedy · Action", releaseDate: null, duration: 108, backdropUrl: null },
-  { id: 107, title: "The White Lotus", posterUrl: "https://image.tmdb.org/t/p/w500/lKaoMjNjgEFBqhLy96GuyAiTip3.jpg", description: "A group of wealthy vacationers discover nothing is what it seems.", genre: "Drama · Mystery", releaseDate: null, duration: 135, backdropUrl: null },
-  { id: 108, title: "Last Dance", posterUrl: "https://image.tmdb.org/t/p/w500/bxh5De1ccGQpE5PKKwQDkHFW2v8.jpg", description: "A former ballerina returns to the stage for one final performance.", genre: "Drama · Musical", releaseDate: null, duration: 120, backdropUrl: null },
-]
-
+// Mock data for upcoming section — will upgrade later
 const upcoming: LandingMovie[] = [
   { id: 201, title: "Super Mario Galaxy", posterUrl: "https://image.tmdb.org/t/p/w500/qNBAXBIQlnOThrVvA6mA2B5ggV6.jpg", description: "Mario travels across the galaxy to save the princess from a new cosmic threat.", genre: "Animated · Adventure", releaseDate: "April 20, 2026", duration: 95, backdropUrl: null },
   { id: 202, title: "Mission Impossible: Final Act", posterUrl: "https://image.tmdb.org/t/p/w500/NNxYkU70HPurnNCSiCjYAmacwm.jpg", description: "Ethan Hunt faces the greatest threat of his career — himself.", genre: "Action · Thriller", releaseDate: "May 15, 2026", duration: 148, backdropUrl: null },
@@ -70,7 +59,7 @@ export default async function Home() {
     <main style={{ background: "#0d0d0d", minHeight: "100vh", overflowX: "hidden" }}>
       <Navbar user={user} />
       <HeroCarousel movies={latestMovies} />
-      <InCinemaSection movies={inCinemas} />
+      <NowInCinemas />
       <UpcomingSection movies={upcoming} />
     </main>
   )
