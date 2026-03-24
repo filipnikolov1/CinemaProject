@@ -1,4 +1,3 @@
-import Link from "next/link"
 import styles from "./admin.module.scss"
 import { Suspense } from "react"
 import AdminLoadingSpinner from "./loading"

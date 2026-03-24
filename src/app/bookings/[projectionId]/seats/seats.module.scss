@@ -4,9 +4,8 @@
   color: #e6edf3;
   display: flex;
   justify-content: center;
-  padding: 40px 24px;
+  padding: 88px 24px 30px;
   box-sizing: border-box;
-  overflow-x: hidden;
 }
 
 .inner {
@@ -16,56 +15,83 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
+  align-items: stretch;
 }
 
-.loading {
+// Loading
+.loadingPage {
   min-height: 100vh;
   background: #0a0a0f;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #8b949e;
-  font-size: 14px;
+  padding-top: 68px; // keeps content below navbar
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 2px solid #21262d;
+  border-top-color: #e6edf3;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
 }
 
 // Banner
 .banner {
-  display: flex;
-  gap: 24px;
-  background: #161b22;
-  border: 1px solid #21262d;
-  border-radius: 14px;
-  padding: 24px;
-  align-items: center;
   position: relative;
+  border-radius: 14px;
   overflow: hidden;
+  min-height: 220px;
+}
 
-  // subtle red left accent
-  &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 12px;
-    height: 100%;
-    background: #e50914;
-    border-radius: 14px 0 0 14px;
-  }
+.bannerBg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center 20%;
+  filter: blur(0px) brightness(0.35) saturate(0.7);
+  transform: scale(1.05);
+  z-index: 0;
+}
+
+.bannerOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    rgba(10, 10, 15, 0.3) 0%,
+    rgba(10, 10, 15, 0.6) 100%
+  );
+  z-index: 1;
+}
+
+.bannerContent {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  gap: 20px;
+  padding: 28px 28px;
+  align-items: center;
+  min-height: 220px;
 }
 
 .poster {
-  width: 100px;
-  height: 148px;
+  height: 200px;
   object-fit: cover;
   border-radius: 8px;
   flex-shrink: 0;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
 }
 
 .bannerDetails {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
   flex: 1;
 }
 
@@ -79,28 +105,29 @@
   font-size: 11px;
   font-weight: 600;
   color: #8b949e;
-  background: #21262d;
+  background: rgba(33, 38, 45, 0.8);
   border: 1px solid #30363d;
   padding: 3px 10px;
   border-radius: 20px;
   letter-spacing: 0.3px;
+  backdrop-filter: blur(4px);
 }
 
 .movieTitle {
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   font-weight: 700;
-  color: #e6edf3;
+  color: #fff;
   margin: 0;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.4px;
   line-height: 1.2;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
 }
 
 .bannerInfo {
   display: flex;
-  gap: 0;
   align-items: center;
-  flex-wrap: wrap;
   gap: 4px;
+  flex-wrap: wrap;
 }
 
 .bannerInfoItem {
@@ -112,8 +139,8 @@
 
 .bannerDivider {
   width: 1px;
-  height: 32px;
-  background: #21262d;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.1);
   margin-right: 20px;
   flex-shrink: 0;
 }
@@ -121,7 +148,7 @@
 .bannerInfoLabel {
   font-size: 10px;
   font-weight: 600;
-  color: #484f58;
+  color: rgba(255, 255, 255, 0.35);
   text-transform: uppercase;
   letter-spacing: 1px;
 }
@@ -134,8 +161,9 @@
 // Layout
 .layout {
   display: flex;
-  gap: 16px;
+  gap: 24px;
   align-items: flex-start;
+  margin-top: 8px;
 
   @media (max-width: 768px) {
     flex-direction: column;
@@ -145,9 +173,6 @@
 .pickerCard {
   flex: 1;
   min-width: 0;
-  background: #161b22;
-  border: 1px solid #21262d;
-  border-radius: 12px;
   overflow-x: auto;
 }
 
@@ -162,13 +187,15 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  position: sticky;
+  top: 88px;
 
   @media (max-width: 768px) {
     width: 100%;
     box-sizing: border-box;
+    position: static;
   }
 }
-
 .summaryTitle {
   font-size: 11px;
   font-weight: 600;
@@ -190,9 +217,7 @@
   font-size: 13px;
   color: #8b949e;
 
-  strong {
-    color: #e6edf3;
-  }
+  strong { color: #e6edf3; }
 }
 
 .vipPrice {
@@ -222,13 +247,13 @@
   color: #f0a500;
   background: #2a1f00;
   border: 1px solid #4a3500;
-  padding: 4px 6px 2px 7.5px;
+  padding: 1px 6px;
   border-radius: 20px;
-  letter-spacing: 1px;
-  white-space: nowrap;
+  letter-spacing: 0.5px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  padding: 4px 6px 2px 7.5px;
 }
 
 .selectedPrice {
@@ -274,9 +299,7 @@
   font-family: inherit;
   transition: background 0.15s;
 
-  &:hover {
-    background: #c4070f;
-  }
+  &:hover { background: #c4070f; }
 }
 
 .confirmDisabled {
@@ -284,7 +307,5 @@
   color: #484f58;
   cursor: not-allowed;
 
-  &:hover {
-    background: #21262d;
-  }
+  &:hover { background: #21262d; }
 }

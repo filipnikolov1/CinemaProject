@@ -36,7 +36,6 @@ export default async function ConfirmPage({ searchParams }: ConfirmPageProps) {
         </Suspense>
 
         <div className={styles.header}>
-          <div className={styles.checkmark}>✓</div>
           <h1 className={styles.title}>Booking confirmed</h1>
           <p className={styles.subtitle}>
             {bookings.length === 1

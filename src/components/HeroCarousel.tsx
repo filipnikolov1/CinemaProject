@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
+import Link from "next/link"
 import styles from "./HeroCarousel.module.scss"
 
 type Movie = {
@@ -17,35 +18,39 @@ type Movie = {
 type HeroCarouselProps = { movies: Movie[] }
 
 function getBackdrop(movie: Movie) {
-  // Prefer the proper TMDB backdrop (landscape), fall back to upscaled poster
   if (movie.backdropUrl) return movie.backdropUrl
   if (movie.posterUrl) return movie.posterUrl.replace("/w500/", "/original/")
   return null
 }
 
-function formatDate(iso: string | null) {
-  if (!iso) return null
-  try {
-    return new Date(iso).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
-  } catch { return null }
+function formatDuration(min: number) {
+  const h = Math.floor(min / 60)
+  const m = min % 60
+  return h > 0 ? `${h}h ${m}m` : `${m}m`
 }
 
-// How many extra movies to pad on each side for the loop illusion
-const PAD = 7
+function formatYear(iso: string | null) {
+  if (!iso) return null
+  try { return new Date(iso).getFullYear().toString() } catch { return null }
+}
+
+function pad(n: number) {
+  return String(n).padStart(2, "0")
+}
 
 export default function HeroCarousel({ movies }: HeroCarouselProps) {
   const [current, setCurrent] = useState(0)
   const [fading, setFading] = useState(false)
   const [firstLoad, setFirstLoad] = useState(true)
-  const scrollRef = useRef<HTMLDivElement>(null)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
-  const didMount = useRef(false)
+  const titleListRef = useRef<HTMLElement>(null)
 
-  // Build padded display array: [...last PAD] + [...all] + [...first PAD]
-  const display = movies.length > 0 ? [...movies.slice(-PAD), ...movies, ...movies.slice(0, PAD)] : []
-
-  // The scroll-index of the active poster in the display array
-  const scrollIndex = current + PAD
+  // -- Old poster strip refs (commented out) --
+  // const scrollRef = useRef<HTMLDivElement>(null)
+  // const didMount = useRef(false)
+  // const PAD = 7
+  // const display = movies.length > 0 ? [...movies.slice(-PAD), ...movies, ...movies.slice(0, PAD)] : []
+  // const scrollIndex = current + PAD
 
   function startAutoplay() {
     if (timerRef.current) clearInterval(timerRef.current)
@@ -68,17 +73,34 @@ export default function HeroCarousel({ movies }: HeroCarouselProps) {
     }
   }, [movies.length])
 
-  // Scroll to center the active poster
+  // Scroll active title into view (within the list only, not the page)
   useEffect(() => {
-    const el = scrollRef.current
-    if (!el || !display.length) return
-    const child = el.children[scrollIndex] as HTMLElement
-    if (!child) return
-    const offset = child.offsetLeft - el.offsetWidth / 2 + child.offsetWidth / 2
-    // Instant scroll on first mount, smooth after
-    el.scrollTo({ left: offset, behavior: didMount.current ? "smooth" : "instant" })
-    didMount.current = true
-  }, [current, scrollIndex, display.length])
+    const list = titleListRef.current
+    if (!list) return
+    const active = list.children[current] as HTMLElement
+    if (!active) return
+    const listTop = list.scrollTop
+    const listHeight = list.clientHeight
+    const itemTop = active.offsetTop - list.offsetTop
+    const itemBottom = itemTop + active.offsetHeight
+
+    if (itemTop < listTop) {
+      list.scrollTo({ top: itemTop, behavior: "smooth" })
+    } else if (itemBottom > listTop + listHeight) {
+      list.scrollTo({ top: itemBottom - listHeight, behavior: "smooth" })
+    }
+  }, [current])
+
+  // -- Old scroll-to-center effect (commented out) --
+  // useEffect(() => {
+  //   const el = scrollRef.current
+  //   if (!el || !display.length) return
+  //   const child = el.children[scrollIndex] as HTMLElement
+  //   if (!child) return
+  //   const offset = child.offsetLeft - el.offsetWidth / 2 + child.offsetWidth / 2
+  //   el.scrollTo({ left: offset, behavior: didMount.current ? "smooth" : "instant" })
+  //   didMount.current = true
+  // }, [current, scrollIndex, display.length])
 
   function goTo(realIndex: number) {
     if (realIndex === current || fading) return
@@ -90,26 +112,25 @@ export default function HeroCarousel({ movies }: HeroCarouselProps) {
     startAutoplay()
   }
 
-  function goPrev() {
-    const prev = current === 0 ? movies.length - 1 : current - 1
-    goTo(prev)
-  }
-
-  function goNext() {
-    const next = (current + 1) % movies.length
-    goTo(next)
-  }
-
-  function handlePosterClick(displayIndex: number) {
-    const realIndex = ((displayIndex - PAD) % movies.length + movies.length) % movies.length
-    goTo(realIndex)
-  }
+  // -- Old nav helpers (commented out, kept for reference) --
+  // function goPrev() {
+  //   const prev = current === 0 ? movies.length - 1 : current - 1
+  //   goTo(prev)
+  // }
+  // function goNext() {
+  //   const next = (current + 1) % movies.length
+  //   goTo(next)
+  // }
+  // function handlePosterClick(displayIndex: number) {
+  //   const realIndex = ((displayIndex - PAD) % movies.length + movies.length) % movies.length
+  //   goTo(realIndex)
+  // }
 
   if (!movies.length) {
     return (
       <section className={styles.hero}>
         <div className={styles.overlay} />
-        <div className={styles.heroBottom}>
+        <div className={styles.heroInner}>
           <div className={styles.content}>
             <h1 className={styles.title}>No movies yet</h1>
             <p className={styles.description}>Add movies through the admin panel to see them here.</p>
@@ -121,7 +142,11 @@ export default function HeroCarousel({ movies }: HeroCarouselProps) {
 
   const movie = movies[current]
   const backdrop = getBackdrop(movie)
-  const releaseFormatted = formatDate(movie.releaseDate)
+  const year = formatYear(movie.releaseDate)
+  const genre = movie.genre?.split(",")[0].trim()
+
+  // Build meta string: "Action · 2026 · 2h 15m"
+  const metaParts = [genre, year, formatDuration(movie.duration)].filter(Boolean)
 
   return (
     <section id="popular" className={styles.hero}>
@@ -132,17 +157,56 @@ export default function HeroCarousel({ movies }: HeroCarouselProps) {
       <div className={styles.overlay} />
       <div className={styles.vignette} />
 
-      <div className={styles.heroBottom}>
+      {/* Vertical side label */}
+      <span className={styles.sideLabel}>Latest</span>
+
+      <div className={styles.heroInner}>
+        {/* Left: movie info */}
+        <div className={`${styles.content} ${firstLoad ? styles.contentEnter : ""} ${fading ? styles.contentHidden : styles.contentVisible}`}>
+          <span className={styles.counter}>{pad(current + 1)} / {pad(movies.length)}</span>
+          <h1 className={styles.title}>{movie.title}</h1>
+          <p className={styles.meta}>
+            {metaParts.map((part, i) => (
+              <span key={i}>
+                {i > 0 && <span className={styles.metaSep}>·</span>}
+                {part}
+              </span>
+            ))}
+          </p>
+          <p className={styles.description}>{movie.description || "No description available."}</p>
+          <Link href={`/movies/${movie.id}`} className={styles.btnDetails}>
+            View Details
+          </Link>
+        </div>
+
+        {/* -- Old content (commented out) --
         <div className={`${styles.content} ${firstLoad ? styles.contentEnter : ""} ${fading ? styles.contentHidden : styles.contentVisible}`}>
           {movie.genre && <span className={styles.genre}>{movie.genre}</span>}
           <h1 className={styles.title}>{movie.title}</h1>
           <p className={styles.description}>{movie.description || "No description available."}</p>
           {releaseFormatted && <p className={styles.releaseDate}>{releaseFormatted}</p>}
         </div>
+        */}
 
+        {/* Right: editorial title list */}
+        <nav className={styles.titleList} ref={titleListRef}>
+          {movies.map((m, i) => (
+            <button
+              key={m.id}
+              className={`${styles.titleItem} ${i === current ? styles.titleItemActive : ""}`}
+              onClick={() => goTo(i)}
+            >
+              <span className={styles.titleNum}>{pad(i + 1)}</span>
+              <span className={styles.titleText}>{m.title}</span>
+            </button>
+          ))}
+        </nav>
+
+        {/* -- Old poster strip (commented out) --
         <div className={styles.stripWrap}>
-          <button className={styles.arrowBtn} style={{ left: 12 }} onClick={goPrev}>&#8249;</button>
-
+          <button className={styles.arrowBtn} style={{ left: 12 }} onClick={goPrev}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
+          </button>
           <div className={styles.strip} ref={scrollRef}>
             {display.map((m, i) => {
               const realIdx = ((i - PAD) % movies.length + movies.length) % movies.length
@@ -157,14 +221,14 @@ export default function HeroCarousel({ movies }: HeroCarouselProps) {
                     height: active ? 290 : 210,
                     borderRadius: 10,
                     overflow: "hidden",
-                    border: active ? "3px solid #f5c518" : "2px solid rgba(255,255,255,0.06)",
+                    border: active ? "3px solid #e50914" : "2px solid rgba(255,255,255,0.06)",
                     cursor: "pointer",
                     transition: "width 0.4s, height 0.4s, opacity 0.4s, filter 0.4s, border-color 0.3s, box-shadow 0.3s",
                     background: "#1a1a1a",
                     padding: 0,
                     opacity: active ? 1 : 0.5,
                     filter: active ? "none" : "blur(1.5px) brightness(0.6)",
-                    boxShadow: active ? "0 8px 40px rgba(245,197,24,0.3)" : "none",
+                    boxShadow: active ? "0 8px 40px rgba(229,9,20,0.3)" : "none",
                   }}
                 >
                   {m.posterUrl && (
@@ -180,9 +244,17 @@ export default function HeroCarousel({ movies }: HeroCarouselProps) {
               )
             })}
           </div>
-
-          <button className={styles.arrowBtn} style={{ right: 12 }} onClick={goNext}>&#8250;</button>
+          <button className={styles.arrowBtn} style={{ right: 12 }} onClick={goNext}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
+          </button>
         </div>
+        */}
+      </div>
+
+      {/* Scroll hint */}
+      <div className={styles.scrollHint}>
+        <span className={styles.scrollText}>Scroll</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
       </div>
     </section>
   )

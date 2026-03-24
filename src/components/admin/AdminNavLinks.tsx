@@ -68,6 +68,9 @@ export default function AdminNavLinks() {
         >
           Halls
         </Link>
+        <Link href="/" className={styles.homeButton}>
+          Back
+        </Link>
         <button onClick={handleLogout} className={styles.logoutButton}>
           Logout
         </button>

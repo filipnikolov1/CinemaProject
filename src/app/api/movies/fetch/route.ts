@@ -8,7 +8,7 @@ import {
   MovieListType,
 } from "@/lib/movieApi"
 
-const PAGES_PER_LIST = 1
+const PAGES_PER_LIST = 10
 
 const LISTS: MovieListType[] = ["popular", "top_rated", "now_playing", "upcoming"]
 
@@ -25,8 +25,6 @@ export async function POST() {
     let totalUpdated = 0
 
     for (const list of LISTS) {
-      console.log(`\n📋 Fetching: ${list}`)
-
       const listFlag = LIST_FLAGS[list]
 
       for (let page = 1; page <= PAGES_PER_LIST; page++) {
@@ -75,9 +73,6 @@ export async function POST() {
           totalSaved++
         }
 
-        console.log(
-          `  ✓ ${list} page ${page}/${Math.min(PAGES_PER_LIST, totalPages)} — saved: ${totalSaved}, updated: ${totalUpdated}`
-        )
       }
     }
 
@@ -85,7 +80,6 @@ export async function POST() {
       message: `Done! ${totalSaved} new movies saved, ${totalUpdated} existing updated.`,
     })
   } catch (error) {
-    console.error("FULL ERROR:", error)
     return NextResponse.json(
       {
         error: "Failed to fetch movies",

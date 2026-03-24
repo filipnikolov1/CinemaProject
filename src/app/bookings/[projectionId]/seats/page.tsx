@@ -12,6 +12,7 @@ interface ProjectionInfo {
   movie: {
     title: string
     posterUrl: string | null
+    backdropUrl: string | null
     duration: number
     genre: string | null
     releaseDate: string | null
@@ -84,6 +85,22 @@ export default function SeatSelectionPage() {
     }
   }
 
+  if (loading) {
+    return (
+      <div className={styles.loadingPage}>
+        <div className={styles.spinner} />
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className={styles.loadingPage}>
+        <p style={{ color: "#f85149" }}>{error}</p>
+      </div>
+    )
+  }
+
   const totalSeats = projection?.hall.totalSeats || 0
   const vipSeats = getVipSeats(totalSeats)
   const regularPrice = projection?.price || 0
@@ -104,44 +121,56 @@ export default function SeatSelectionPage() {
     <div className={styles.page}>
       <div className={styles.inner}>
 
+        {/* Banner with backdrop */}
         <div className={styles.banner}>
-          {projection?.movie.posterUrl && (
-            <img
-              src={projection.movie.posterUrl}
-              alt={projection.movie.title}
-              className={styles.poster}
+          {projection?.movie.backdropUrl && (
+            <div
+              className={styles.bannerBg}
+              style={{ backgroundImage: `url(${projection.movie.backdropUrl})` }}
             />
           )}
-          <div className={styles.bannerDetails}>
-            <div className={styles.bannerMeta}>
-              {projection?.movie.genre && (
-                <span className={styles.badge}>{projection.movie.genre.split(",")[0]}</span>
-              )}
-              {releaseYear && (
-                <span className={styles.badge}>{releaseYear}</span>
-              )}
-              <span className={styles.badge}>{projection?.movie.duration} min</span>
-            </div>
-            <h1 className={styles.movieTitle}>{projection?.movie.title}</h1>
-            <div className={styles.bannerInfo}>
-              <div className={styles.bannerInfoItem}>
-                <span className={styles.bannerInfoLabel}>Date</span>
-                <span className={styles.bannerInfoValue}>{formattedDate}</span>
+          <div className={styles.bannerOverlay} />
+
+          <div className={styles.bannerContent}>
+            {projection?.movie.posterUrl && (
+              <img
+                src={projection.movie.posterUrl}
+                alt={projection.movie.title}
+                className={styles.poster}
+              />
+            )}
+            <div className={styles.bannerDetails}>
+              <div className={styles.bannerMeta}>
+                {projection?.movie.genre && (
+                  <span className={styles.badge}>{projection.movie.genre.split(",")[0]}</span>
+                )}
+                {releaseYear && (
+                  <span className={styles.badge}>{releaseYear}</span>
+                )}
+                <span className={styles.badge}>{projection?.movie.duration} min</span>
               </div>
-              <div className={styles.bannerDivider} />
-              <div className={styles.bannerInfoItem}>
-                <span className={styles.bannerInfoLabel}>Time</span>
-                <span className={styles.bannerInfoValue}>{formattedTime}</span>
-              </div>
-              <div className={styles.bannerDivider} />
-              <div className={styles.bannerInfoItem}>
-                <span className={styles.bannerInfoLabel}>Hall</span>
-                <span className={styles.bannerInfoValue}>{projection?.hall.name}</span>
+              <h1 className={styles.movieTitle}>{projection?.movie.title}</h1>
+              <div className={styles.bannerInfo}>
+                <div className={styles.bannerInfoItem}>
+                  <span className={styles.bannerInfoLabel}>Date</span>
+                  <span className={styles.bannerInfoValue}>{formattedDate}</span>
+                </div>
+                <div className={styles.bannerDivider} />
+                <div className={styles.bannerInfoItem}>
+                  <span className={styles.bannerInfoLabel}>Time</span>
+                  <span className={styles.bannerInfoValue}>{formattedTime}</span>
+                </div>
+                <div className={styles.bannerDivider} />
+                <div className={styles.bannerInfoItem}>
+                  <span className={styles.bannerInfoLabel}>Hall</span>
+                  <span className={styles.bannerInfoValue}>{projection?.hall.name}</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
+        {/* Seat picker + summary */}
         <div className={styles.layout}>
           <div className={styles.pickerCard}>
             <SeatPicker

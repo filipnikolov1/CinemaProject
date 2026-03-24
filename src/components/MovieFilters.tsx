@@ -1,71 +1,81 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
+import { useState, useEffect, useRef } from "react";
+import styles from "../app/movies/movies.module.scss";
 
 export default function MovieFilters() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const activeFilter = searchParams.get("filter");
+    const currentSearch = searchParams.get("search") || "";
+    const [search, setSearch] = useState(currentSearch);
+    const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    const baseClass =
-        "cursor-pointer flex items-center gap-2 px-4 py-2 rounded-full border transition text-sm font-medium";
+    const filters = [
+        { key: null, label: "All" },
+        { key: "popular", label: "Popular" },
+        { key: "topRated", label: "Top Rated" },
+        { key: "nowPlaying", label: "Now Playing" },
+        { key: "upcoming", label: "Upcoming" },
+    ];
+
+    const buildUrl = (filterKey: string | null, searchValue?: string) => {
+        const params = new URLSearchParams();
+        if (filterKey) params.set("filter", filterKey);
+        const s = searchValue ?? search;
+        if (s.trim()) params.set("search", s.trim());
+        const qs = params.toString();
+        return `/movies${qs ? `?${qs}` : ""}`;
+    };
+
+    useEffect(() => {
+        if (debounceRef.current) clearTimeout(debounceRef.current);
+        debounceRef.current = setTimeout(() => {
+            if (search !== currentSearch) {
+                router.push(buildUrl(activeFilter, search));
+            }
+        }, 300);
+        return () => {
+            if (debounceRef.current) clearTimeout(debounceRef.current);
+        };
+    }, [search]);
 
     return (
-        <div className="flex gap-3 flex-wrap">
-            <button
-                onClick={() => router.push("/movies")}
-                className={`${baseClass} ${
-                    !activeFilter
-                        ? "bg-white text-black border-white"
-                        : "bg-white/5 text-white border-white/10 hover:bg-white/10"
-                }`}
-            >
-                🎬 All
-            </button>
-
-            <button
-                onClick={() => router.push("/movies?filter=popular")}
-                className={`${baseClass} ${
-                    activeFilter === "popular"
-                        ? "bg-red-500 text-white border-red-500"
-                        : "bg-white/5 text-white border-white/10 hover:bg-red-500/20"
-                }`}
-            >
-                🔥 Popular
-            </button>
-
-            <button
-                onClick={() => router.push("/movies?filter=topRated")}
-                className={`${baseClass} ${
-                    activeFilter === "topRated"
-                        ? "bg-yellow-500 text-black border-yellow-500"
-                        : "bg-white/5 text-white border-white/10 hover:bg-yellow-500/20"
-                }`}
-            >
-                ⭐ Top Rated
-            </button>
-
-            <button
-                onClick={() => router.push("/movies?filter=nowPlaying")}
-                className={`${baseClass} ${
-                    activeFilter === "nowPlaying"
-                        ? "bg-green-500 text-white border-green-500"
-                        : "bg-white/5 text-white border-white/10 hover:bg-green-500/20"
-                }`}
-            >
-                🎥 Now Playing
-            </button>
-
-            <button
-                onClick={() => router.push("/movies?filter=upcoming")}
-                className={`${baseClass} ${
-                    activeFilter === "upcoming"
-                        ? "bg-purple-500 text-white border-purple-500"
-                        : "bg-white/5 text-white border-white/10 hover:bg-purple-500/20"
-                }`}
-            >
-                🏆 Upcoming
-            </button>
+        <div className={styles.filtersWrap}>
+            <div className={styles.searchBar}>
+                <input
+                    type="text"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Search movies..."
+                    className={styles.searchInput}
+                />
+                {search && (
+                    <button
+                        type="button"
+                        className={styles.searchClear}
+                        onClick={() => setSearch("")}
+                    >
+                        &times;
+                    </button>
+                )}
+            </div>
+            <div className={styles.filters}>
+                {filters.map(({ key, label }) => (
+                    <button
+                        key={label}
+                        onClick={() => router.push(buildUrl(key))}
+                        className={`${styles.filterBtn} ${
+                            activeFilter === key || (!activeFilter && !key)
+                                ? styles.filterBtnActive
+                                : ""
+                        }`}
+                    >
+                        {label}
+                    </button>
+                ))}
+            </div>
         </div>
     );
 }
