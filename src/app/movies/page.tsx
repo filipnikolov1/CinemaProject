@@ -1,8 +1,14 @@
+import type { Metadata } from "next";
 import { prisma } from "@/lib/db";
 import Link from "next/link";
 import { Movie } from "@prisma/client";
 import MovieFilters from "@/components/MovieFilters";
 import styles from "./movies.module.scss";
+
+export const metadata: Metadata = {
+  title: "Movies",
+  description: "Discover popular, top rated, now playing and upcoming movies at Cinema.",
+};
 
 type MoviesPageProps = {
     searchParams: Promise<{

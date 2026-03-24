@@ -1,7 +1,13 @@
+import type { Metadata } from "next"
 import styles from "./admin.module.scss"
 import { Suspense } from "react"
 import AdminLoadingSpinner from "./loading"
 import AdminNavLinks from "@/components/admin/AdminNavLinks"
+
+export const metadata: Metadata = {
+  title: "Admin Panel",
+  description: "Cinema administration — manage movies, halls, projections and bookings.",
+}
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (

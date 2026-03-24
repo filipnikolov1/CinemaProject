@@ -19,6 +19,7 @@ model User {
   role      Role      @default(USER)
   createdAt DateTime  @default(now())
   bookings  Booking[]
+  favorites Favorite[]
 }
 
 model Movie {
@@ -35,8 +36,11 @@ model Movie {
   isTopRated    Boolean      @default(false)
   isNowPlaying  Boolean      @default(false)
   isUpcoming    Boolean      @default(false)
+  rating        Float?
+  ageRating     String?
   createdAt     DateTime     @default(now())
   projections   Projection[]
+  favorites     Favorite[]
 }
 
 model Hall {
@@ -66,4 +70,15 @@ model Booking {
   createdAt    DateTime   @default(now())
   projection   Projection @relation(fields: [projectionId], references: [id])
   user         User       @relation(fields: [userId], references: [id])
+}
+
+model Favorite {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  movieId   Int
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  movie     Movie    @relation(fields: [movieId], references: [id])
+
+  @@unique([userId, movieId])
 }

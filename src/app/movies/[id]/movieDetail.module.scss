@@ -152,6 +152,18 @@
   font-weight: 600;
 }
 
+.ageRating {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border: 1px solid rgba(63, 185, 80, 0.4);
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #3fb950;
+  letter-spacing: 0.5px;
+}
+
 .badges {
   display: flex;
   gap: 8px;

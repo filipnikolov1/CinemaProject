@@ -13,6 +13,8 @@ type Movie = {
   genre: string | null
   releaseDate: string | null
   duration: number
+  rating: number | null
+  ageRating: string | null
 }
 
 type HeroCarouselProps = { movies: Movie[] }
@@ -172,6 +174,21 @@ export default function HeroCarousel({ movies }: HeroCarouselProps) {
                 {part}
               </span>
             ))}
+            {movie.rating != null && movie.rating > 0 && (
+              <span>
+                <span className={styles.metaSep}>·</span>
+                <span className={styles.ratingInline}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="#f0a500" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  {movie.rating.toFixed(1)}
+                </span>
+              </span>
+            )}
+            {movie.ageRating && (
+              <span>
+                <span className={styles.metaSep}>·</span>
+                <span className={styles.ageBadge}>{movie.ageRating}</span>
+              </span>
+            )}
           </p>
           <p className={styles.description}>{movie.description || "No description available."}</p>
           <Link href={`/movies/${movie.id}`} className={styles.btnDetails}>

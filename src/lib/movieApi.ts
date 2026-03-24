@@ -18,6 +18,13 @@ export interface TMDBMovie {
   genres: { id: number; name: string }[]
   poster_path: string | null
   backdrop_path: string | null
+  vote_average: number
+  release_dates?: {
+    results: {
+      iso_3166_1: string
+      release_dates: { certification: string }[]
+    }[]
+  }
 }
 
 export async function fetchMovieList(type: MovieListType, page = 1) {
@@ -30,8 +37,17 @@ export async function fetchMovieList(type: MovieListType, page = 1) {
 }
 
 export async function fetchMovieDetails(tmdbId: number): Promise<TMDBMovie> {
-  const res = await fetch(`${TMDB_BASE_URL}/movie/${tmdbId}`, { headers })
+  const res = await fetch(
+    `${TMDB_BASE_URL}/movie/${tmdbId}?append_to_response=release_dates`,
+    { headers }
+  )
   return res.json()
+}
+
+export function getUSCertification(details: TMDBMovie): string | null {
+  const us = details.release_dates?.results?.find(r => r.iso_3166_1 === "US")
+  const cert = us?.release_dates?.find(rd => rd.certification)?.certification
+  return cert || null
 }
 
 export function getPosterUrl(posterPath: string | null): string | null {

@@ -1,44 +1,48 @@
+import { prisma } from "@/lib/db"
 import styles from "./UpcomingSection.module.scss"
+import UpcomingGrid from "./UpcomingGrid"
+import type { UpcomingMovie } from "./UpcomingGrid"
 
-type Movie = {
-  id: number
-  title: string
-  description: string | null
-  posterUrl: string | null
-  releaseDate?: string | null
-  genre: string | null
-}
+export default async function UpcomingSection() {
+  let movies: UpcomingMovie[] = []
 
-type Props = { movies: Movie[] }
+  try {
+    const dbMovies = await prisma.movie.findMany({
+      where: {
+        releaseDate: { gt: new Date() },
+        posterUrl: { not: null },
+      },
+      orderBy: { releaseDate: "asc" },
+      take: 12,
+    })
 
-export default function UpcomingSection({ movies }: Props) {
+    movies = dbMovies
+      .filter(m => m.posterUrl)
+      .map(m => ({
+        id: m.id,
+        title: m.title,
+        posterUrl: m.posterUrl,
+        genre: m.genre,
+        duration: m.duration,
+        releaseDate: m.releaseDate ? m.releaseDate.toISOString() : null,
+        rating: m.rating,
+        ageRating: m.ageRating,
+      }))
+  } catch {}
+
+  if (!movies.length) return null
+
   return (
     <section id="upcoming" className={styles.section}>
-      <span className={styles.eyebrow}>Coming Soon</span>
-      <h2 className={styles.title}>Upcoming Movies</h2>
+      <div className={styles.fadeTop} />
+      <span className={styles.sideLabel}>Coming Soon</span>
 
-      <div className={styles.grid}>
-        {movies.map(movie => (
-          <div key={movie.id} className={styles.card}>
-            <div className={styles.posterWrap}>
-              {movie.posterUrl && (
-                <img
-                  src={movie.posterUrl}
-                  alt={movie.title}
-                  className={styles.poster}
-                  loading="lazy"
-                />
-              )}
-            </div>
-            <div className={styles.info}>
-              {movie.releaseDate && <span className={styles.releaseDate}>{movie.releaseDate}</span>}
-              <h3 className={styles.cardTitle}>{movie.title}</h3>
-              <p className={styles.cardDesc}>{movie.description || "No description available."}</p>
-              {movie.genre && <span className={styles.genreTag}>{movie.genre}</span>}
-            </div>
-          </div>
-        ))}
+      <div className={styles.header}>
+        <span className={styles.eyebrow}>Upcoming</span>
+        <h2 className={styles.heading}>Coming Soon</h2>
       </div>
+
+      <UpcomingGrid movies={movies} />
     </section>
   )
 }

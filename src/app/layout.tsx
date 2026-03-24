@@ -4,6 +4,7 @@ import "./globals.css"
 import { Suspense } from "react"
 import ToastFromParams from "@/components/admin/ToastFromParams"
 import Navbar from "@/components/Navbar"
+import Footer from "@/components/Footer"
 import { getCurrentUser } from "@/lib/getCurrentUser"
 
 const geistSans = Geist({
@@ -17,8 +18,11 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "Cinema App",
-  description: "Book your cinema tickets",
+  title: {
+    default: "Cinema — Book Movie Tickets Online",
+    template: "%s — Cinema",
+  },
+  description: "Browse latest movies, check showtimes and book tickets online.",
 }
 
 export default async function RootLayout({
@@ -40,6 +44,7 @@ export default async function RootLayout({
           />
         </Suspense>
         {children}
+        <Footer />
       </body>
     </html>
   )

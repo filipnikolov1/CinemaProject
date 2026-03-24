@@ -1,6 +1,12 @@
+import type { Metadata } from "next"
 import { prisma } from "@/lib/db"
 import { notFound } from "next/navigation"
 import Ticket from "@/components/Ticket"
+
+export const metadata: Metadata = {
+  title: "Booking Confirmed",
+  description: "Your cinema booking has been confirmed. View your ticket details.",
+}
 import Link from "next/link"
 import styles from "./confirm.module.scss"
 import { getDisplayPrice } from "@/lib/vip"

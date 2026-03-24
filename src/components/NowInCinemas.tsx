@@ -9,6 +9,7 @@ export type CinemaMovie = {
   backdropUrl: string | null
   genre: string | null
   duration: number
+  rating: number | null
   projection: {
     id: number
     startTime: string
@@ -52,6 +53,7 @@ export default async function NowInCinemas() {
           backdropUrl: m.backdropUrl ?? null,
           genre: m.genre,
           duration: m.duration,
+          rating: m.rating,
           projection: {
             id: p.id,
             startTime: p.startTime.toISOString(),

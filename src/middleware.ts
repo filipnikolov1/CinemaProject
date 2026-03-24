@@ -62,6 +62,12 @@ export function middleware(req: NextRequest) {
     if (!payload) return unauthorized()
   }
 
+  if (pathname.startsWith("/api/favorites")) {
+    if (!token) return unauthorized()
+    const payload = getTokenPayload(token)
+    if (!payload) return unauthorized()
+  }
+
   if (pathname.startsWith("/api/halls") && httpMethod !== "GET") {
     if (!token) return unauthorized()
     const payload = getTokenPayload(token)
@@ -95,5 +101,6 @@ export const config = {
     "/api/halls/:path*",
     "/api/projections/:path*",
     "/api/movies/fetch",
+    "/api/favorites/:path*",
   ],
 }

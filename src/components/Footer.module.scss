@@ -1,0 +1,125 @@
+// ── Footer ──
+.footer {
+  position: relative;
+  background: #111;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  font-family: var(--font-geist-sans), Arial, sans-serif;
+}
+
+// ── Top section: columns ──
+.top {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 40px;
+  padding: 56px 64px 48px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+// ── Column ──
+.column {
+  display: flex;
+  flex-direction: column;
+}
+
+.columnTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin: 0 0 18px;
+}
+
+.linkList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.link {
+  font-size: 13px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.45);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  letter-spacing: 0.2px;
+
+  &:hover {
+    color: rgba(255, 255, 255, 0.85);
+  }
+}
+
+// ── Bottom bar ──
+.bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 64px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.copyright {
+  font-size: 12px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.3);
+  letter-spacing: 0.3px;
+}
+
+.bottomNav {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.bottomLink {
+  font-size: 12px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.35);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  letter-spacing: 0.2px;
+
+  &:hover {
+    color: rgba(255, 255, 255, 0.75);
+  }
+}
+
+// ── Responsive ──
+@media (max-width: 1024px) {
+  .top {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    padding: 48px 40px 40px;
+  }
+  .bottom { padding: 20px 40px; }
+}
+
+@media (max-width: 768px) {
+  .top {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px;
+    padding: 40px 24px 32px;
+  }
+  .bottom {
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px 24px;
+    align-items: flex-start;
+  }
+  .bottomNav { flex-wrap: wrap; gap: 16px; }
+}
+
+@media (max-width: 480px) {
+  .top {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 32px 20px 28px;
+  }
+  .bottom { padding: 16px 20px; }
+}
