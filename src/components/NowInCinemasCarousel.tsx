@@ -12,6 +12,7 @@ type CinemaMovie = {
   backdropUrl: string | null
   genre: string | null
   duration: number
+  rating: number | null
   projection: {
     id: number
     startTime: string
@@ -179,6 +180,15 @@ export default function NowInCinemasCarousel({ movies }: Props) {
               <span>{formatDuration(movie.duration)}</span>
               <span className={styles.metaSep}>·</span>
               <span className={styles.priceInline}>from ${movie.projection.price.toFixed(2)}</span>
+              {movie.rating != null && movie.rating > 0 && (
+                <>
+                  <span className={styles.metaSep}>·</span>
+                  <span className={styles.ratingInline}>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="#f0a500" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    {movie.rating.toFixed(1)}
+                  </span>
+                </>
+              )}
             </div>
             <div className={styles.actions}>
               <Link href={`/bookings/${movie.projection.id}/seats`} className={styles.btnPrimary}>
@@ -208,6 +218,10 @@ export default function NowInCinemasCarousel({ movies }: Props) {
         <span className={styles.counter}>
           {pad(current + 1)} <span className={styles.counterSep}>/</span> {pad(total)}
         </span>
+        <div className={styles.scrollHint}>
+          <span className={styles.scrollText}>Scroll</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
+        </div>
       </div>
     </div>
   )

@@ -5,6 +5,7 @@ import {
   fetchMovieDetails,
   getPosterUrl,
   getBackdropUrl,
+  getUSCertification,
   MovieListType,
 } from "@/lib/movieApi"
 
@@ -38,6 +39,8 @@ export async function POST() {
           const releaseDate = details.release_date
             ? new Date(details.release_date)
             : null
+          const rating = details.vote_average || null
+          const ageRating = getUSCertification(details)
 
           const existing = await prisma.movie.findUnique({
             where: { externalId: String(movie.id) },
@@ -50,6 +53,8 @@ export async function POST() {
                 ...listFlag,
                 releaseDate,
                 backdropUrl: getBackdropUrl(details.backdrop_path),
+                rating,
+                ageRating,
               },
             })
             totalUpdated++
@@ -66,6 +71,8 @@ export async function POST() {
               posterUrl: getPosterUrl(details.poster_path),
               backdropUrl: getBackdropUrl(details.backdrop_path),
               releaseDate,
+              rating,
+              ageRating,
               ...listFlag,
             },
           })

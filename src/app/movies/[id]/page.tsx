@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import Link from "next/link";
@@ -8,6 +9,18 @@ type MoviePageProps = {
         id: string;
     }>;
 };
+
+export async function generateMetadata({ params }: MoviePageProps): Promise<Metadata> {
+    const { id } = await params;
+    const movie = await prisma.movie.findUnique({ where: { id: Number(id) } });
+    if (!movie) return { title: "Movie Not Found" };
+    return {
+        title: movie.title,
+        description: movie.description
+            ? movie.description.slice(0, 160)
+            : `Watch ${movie.title} at Cinema. Book your tickets now.`,
+    };
+}
 
 export default async function MoviePage({ params }: MoviePageProps) {
     const { id } = await params;
@@ -88,6 +101,17 @@ export default async function MoviePage({ params }: MoviePageProps) {
                                             year: "numeric",
                                         })}
                                     </span>
+                                </div>
+                            )}
+                            {movie.rating != null && movie.rating > 0 && (
+                                <div className={styles.stat}>
+                                    <svg className={styles.statIcon} width="15" height="15" viewBox="0 0 24 24" fill="#f0a500" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                    <span className={styles.statValue}>{movie.rating.toFixed(1)}</span>
+                                </div>
+                            )}
+                            {movie.ageRating && (
+                                <div className={styles.stat}>
+                                    <span className={styles.ageRating}>{movie.ageRating}</span>
                                 </div>
                             )}
                         </div>
