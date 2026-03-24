@@ -1,28 +1,103 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useState, useEffect, useRef } from "react"
+import { useRouter, usePathname } from "next/navigation"
 import Link from "next/link"
+import styles from "./Navbar.module.scss"
 
 type NavbarProps = {
   user: { id: number; name: string; email: string; role: string } | null
 }
 
+const NAV_ITEMS = [
+  { label: "Latest",    id: "popular",  type: "scroll" },
+  { label: "In Cinema", id: "incinema", type: "scroll" },
+  { label: "Upcoming",  id: "upcoming", type: "scroll" },
+  { label: "Movies",    id: "movies",   type: "link",   href: "/movies" },
+]
+
 export default function Navbar({ user }: NavbarProps) {
   const router = useRouter()
-  const [scrolled, setScrolled] = useState(false)
+  const pathname = usePathname()
+  if (pathname.startsWith("/admin")) return null
+  const [active, setActive] = useState("popular")
+  const [pillStyle, setPillStyle] = useState({ left: 0, width: 0 })
+  const innerRef = useRef<HTMLDivElement>(null)
+  const buttonRefs = useRef<(HTMLElement | null)[]>([])
+  const observersRef = useRef<IntersectionObserver[]>([])
+
+  function setupObservers() {
+    const sections = ["popular", "incinema", "upcoming"]
+    observersRef.current = sections.map(id => {
+      const el = document.getElementById(id)
+      if (!el) return null as any
+      const obs = new IntersectionObserver(
+        ([entry]) => { if (entry.isIntersecting) setActive(id) },
+        { threshold: 0.4 }
+      )
+      obs.observe(el)
+      return obs
+    })
+  }
+
+  function teardownObservers() {
+    observersRef.current.forEach(o => o?.disconnect())
+    observersRef.current = []
+  }
 
   useEffect(() => {
-    function onScroll() {
-      setScrolled(window.scrollY > 60)
+    if (pathname === "/movies") {
+      setActive("movies")
+      return
     }
-    window.addEventListener("scroll", onScroll, { passive: true })
-    return () => window.removeEventListener("scroll", onScroll)
-  }, [])
+    if (pathname !== "/") {
+      setActive("")
+      setPillStyle({ left: 0, width: 0 })
+      return
+    }
+    setActive("popular")
+    setupObservers()
+    return () => teardownObservers()
+  }, [pathname])
+
+  useEffect(() => {
+    const index = NAV_ITEMS.findIndex(item => item.id === active)
+    const btn = buttonRefs.current[index]
+    const container = innerRef.current
+    if (!btn || !container) return
+
+    const btnRect = btn.getBoundingClientRect()
+    const containerRect = container.getBoundingClientRect()
+
+    setPillStyle({
+      left: btnRect.left - containerRect.left,
+      width: btnRect.width,
+    })
+  }, [active])
+
+  const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   function scrollTo(id: string) {
+    if (scrollTimeoutRef.current) {
+      clearTimeout(scrollTimeoutRef.current)
+      scrollTimeoutRef.current = null
+    }
+
+    teardownObservers()
+    setActive(id)
+
+    if (pathname !== "/") {
+      router.push(`/#${id}`)
+      return
+    }
+
     const el = document.getElementById(id)
     if (el) el.scrollIntoView({ behavior: "smooth" })
+
+    scrollTimeoutRef.current = setTimeout(() => {
+      setupObservers()
+      scrollTimeoutRef.current = null
+    }, 1200)
   }
 
   async function handleLogout() {
@@ -32,135 +107,76 @@ export default function Navbar({ user }: NavbarProps) {
   }
 
   return (
-    <nav style={{
-      position: "fixed",
-      top: 0,
-      left: 0,
-      right: 0,
-      zIndex: 100,
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "space-between",
-      padding: "0 48px",
-      height: 68,
-      background: scrolled ? "rgba(10,10,10,0.95)" : "transparent",
-      backdropFilter: scrolled ? "blur(20px)" : "none",
-      borderBottom: scrolled ? "1px solid rgba(255,255,255,0.08)" : "1px solid transparent",
-      transition: "background 0.35s, border-color 0.35s, backdrop-filter 0.35s",
-    }}>
+    <nav className={styles.nav}>
+
       {/* Logo */}
-      <Link href="/" style={{
-        color: "#fff",
-        fontSize: 18,
-        fontWeight: 800,
-        letterSpacing: 2.5,
-        textDecoration: "none",
-      }}>
-        CINEMA
-      </Link>
+      <Link href="/" className={styles.logo}>CINEMA</Link>
 
       {/* Center pill nav */}
-      <div style={{
-        position: "absolute",
-        left: "50%",
-        transform: "translateX(-50%)",
-        display: "flex",
-        alignItems: "center",
-        gap: 0,
-        background: "#1e1e1e",
-        border: "1px solid #333",
-        borderRadius: 100,
-        padding: "4px 6px",
-      }}>
-        {[
-          { label: "Latest", id: "popular" },
-          { label: "In Cinema", id: "incinema" },
-          { label: "Upcoming", id: "upcoming" },
-        ].map(item => (
-          <button
-            key={item.id}
-            onClick={() => scrollTo(item.id)}
+      <div className={styles.pillNav}>
+        <div className={styles.pillInner} ref={innerRef}>
+
+          <div
+            className={styles.slidingPill}
             style={{
-              color: "#aaa",
-              fontSize: 14,
-              fontWeight: 500,
-              background: "none",
-              border: "none",
-              padding: "8px 20px",
-              borderRadius: 100,
-              cursor: "pointer",
-              fontFamily: "inherit",
-              whiteSpace: "nowrap",
-              transition: "color 0.2s, background 0.2s",
+              left: pillStyle.left,
+              width: pillStyle.width,
+              opacity: active ? 1 : 0,
             }}
-            onMouseEnter={e => { e.currentTarget.style.color = "#fff"; e.currentTarget.style.background = "rgba(255,255,255,0.08)" }}
-            onMouseLeave={e => { e.currentTarget.style.color = "#aaa"; e.currentTarget.style.background = "none" }}
-          >
-            {item.label}
-          </button>
-        ))}
-        <Link
-          href="/movies"
-          style={{
-            color: "#aaa",
-            fontSize: 14,
-            fontWeight: 500,
-            textDecoration: "none",
-            padding: "8px 20px",
-            borderRadius: 100,
-            transition: "color 0.2s, background 0.2s",
-          }}
-          onMouseEnter={e => { e.currentTarget.style.color = "#fff"; e.currentTarget.style.background = "rgba(255,255,255,0.08)" }}
-          onMouseLeave={e => { e.currentTarget.style.color = "#aaa"; e.currentTarget.style.background = "none" }}
-        >
-          Movies
-        </Link>
+          />
+
+          {NAV_ITEMS.map((item, i) =>
+            item.type === "scroll" ? (
+              <button
+                key={item.id}
+                ref={el => { buttonRefs.current[i] = el }}
+                onClick={() => scrollTo(item.id)}
+                className={`${styles.link} ${active === item.id ? styles.linkActive : ""}`}
+              >
+                {item.label}
+              </button>
+            ) : (
+              <Link
+                key={item.id}
+                href={item.href!}
+                ref={el => { buttonRefs.current[i] = el }}
+                onClick={() => setActive(item.id)}
+                className={`${styles.link} ${active === item.id ? styles.linkActive : ""}`}
+              >
+                {item.label}
+              </Link>
+            )
+          )}
+        </div>
       </div>
 
-      {/* Right auth */}
-      <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+      {/* Right side */}
+      <div className={styles.auth}>
         {user ? (
           <>
-            <span style={{ color: "#ccc", fontSize: 14, fontWeight: 500 }}>{user.name}</span>
-            <button
-              onClick={handleLogout}
-              style={{
-                color: "#888",
-                fontSize: 14,
-                background: "none",
-                border: "1px solid #333",
-                borderRadius: 100,
-                padding: "7px 18px",
-                cursor: "pointer",
-                fontFamily: "inherit",
-                transition: "color 0.2s, border-color 0.2s",
-              }}
-              onMouseEnter={e => { e.currentTarget.style.color = "#ccc"; e.currentTarget.style.borderColor = "#555" }}
-              onMouseLeave={e => { e.currentTarget.style.color = "#888"; e.currentTarget.style.borderColor = "#333" }}
+            <Link
+              href="/my-bookings"
+              className={`${styles.usernameBtn} ${pathname === "/my-bookings" ? styles.usernameBtnActive : ""}`}
             >
+              {user.name}
+            </Link>
+            {user.role === "ADMIN" && (
+              <Link href="/admin" className={styles.adminBtn}>
+                Admin Panel
+              </Link>
+            )}
+            <button onClick={handleLogout} className={styles.logoutBtn}>
               Log out
             </button>
           </>
         ) : (
           <>
-            <Link href="/login" style={{ color: "#ccc", fontSize: 14, fontWeight: 500, textDecoration: "none" }}>
-              Login
-            </Link>
-            <Link href="/register" style={{
-              background: "#f5c518",
-              color: "#000",
-              padding: "9px 24px",
-              borderRadius: 100,
-              fontSize: 14,
-              fontWeight: 700,
-              textDecoration: "none",
-              display: "inline-block",
-            }}>
-              Sign up
-            </Link>
+            <Link href="/login" className={styles.loginLink}>Login</Link>
+            <Link href="/register" className={styles.signupBtn}>Sign up</Link>
           </>
         )}
       </div>
+
     </nav>
   )
 }

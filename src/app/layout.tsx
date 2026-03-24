@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google"
 import "./globals.css"
 import { Suspense } from "react"
 import ToastFromParams from "@/components/admin/ToastFromParams"
+import Navbar from "@/components/Navbar"
+import { getCurrentUser } from "@/lib/getCurrentUser"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,17 +18,20 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Cinema App",
-  description: "Book your tickets",
+  description: "Book your cinema tickets",
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const user = await getCurrentUser()
+
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <Navbar user={user} />
         <Suspense>
           <ToastFromParams
             messages={{

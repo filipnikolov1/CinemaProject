@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import styles from "./NowInCinemasCarousel.module.scss"
 
@@ -22,164 +22,193 @@ type CinemaMovie = {
 
 type Props = { movies: CinemaMovie[] }
 
-function formatTime(iso: string) {
-  return new Date(iso).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
-}
-
-function formatPrice(price: number) {
-  return `€${price.toFixed(2)}`
-}
-
 function formatDuration(min: number) {
   const h = Math.floor(min / 60)
   const m = min % 60
   return h > 0 ? `${h}h ${m}m` : `${m}m`
 }
 
+function formatTime(iso: string) {
+  try {
+    return new Date(iso).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
+  } catch {
+    return ""
+  }
+}
+
+function formatDate(iso: string) {
+  try {
+    return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" })
+  } catch {
+    return ""
+  }
+}
+
+function pad(n: number) {
+  return String(n).padStart(2, "0")
+}
+
+const INTERVAL = 6000
+const FADE_MS = 700
+
 export default function NowInCinemasCarousel({ movies }: Props) {
-  const [selected, setSelected] = useState<CinemaMovie | null>(null)
-  const [offset, setOffset] = useState(0)
+  // Layer A and B alternate: one fades in while the other holds
+  const [layerA, setLayerA] = useState(0)       // movie index on layer A
+  const [layerB, setLayerB] = useState(0)       // movie index on layer B
+  const [activeLayer, setActiveLayer] = useState<"A" | "B">("A") // which layer is on top (visible)
+  const [visible, setVisible] = useState(true)
 
+  const activeLayerRef = useRef<"A" | "B">("A")
+  activeLayerRef.current = activeLayer
+  const currentRef = useRef(0)
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const current = activeLayer === "A" ? layerA : layerB
+  currentRef.current = current
+  const total = movies.length
+
+  function stopAll() {
+    if (timerRef.current) clearTimeout(timerRef.current)
+    timerRef.current = null
+  }
+
+  function switchTo(next: number) {
+    if (next === currentRef.current) return
+
+    // Hide content
+    setVisible(false)
+
+    // Load new image onto the inactive layer, then crossfade
+    setTimeout(() => {
+      const layer = activeLayerRef.current
+      if (layer === "A") {
+        setLayerB(next)
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => setActiveLayer("B"))
+        })
+      } else {
+        setLayerA(next)
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => setActiveLayer("A"))
+        })
+      }
+      // Show content after backdrop starts fading
+      setTimeout(() => setVisible(true), 100)
+    }, 60)
+
+    // Restart auto-advance
+    stopAll()
+    timerRef.current = setTimeout(() => {
+      const c = currentRef.current
+      switchTo((c + 1) % movies.length)
+    }, INTERVAL)
+  }
+
+  // Auto-start
   useEffect(() => {
-    if (!selected) return
-    function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") setSelected(null)
-    }
-    document.addEventListener("keydown", onKey)
-    document.body.style.overflow = "hidden"
-    return () => {
-      document.removeEventListener("keydown", onKey)
-      document.body.style.overflow = ""
-    }
-  }, [selected])
+    if (!movies.length) return
+    timerRef.current = setTimeout(() => {
+      switchTo((currentRef.current + 1) % movies.length)
+    }, INTERVAL)
+    return stopAll
+  }, [movies.length])
 
-  const scrollable = movies.length > 5
-  const maxOffset = Math.max(0, movies.length - 5)
+  if (!movies.length) return null
 
-  function goPrev() {
-    setOffset(prev => prev === 0 ? maxOffset : prev - 1)
-  }
+  const movie = movies[current]
 
-  function goNext() {
-    setOffset(prev => prev >= maxOffset ? 0 : prev + 1)
-  }
+  const bgStyle = (m: CinemaMovie): React.CSSProperties =>
+    m.backdropUrl
+      ? { backgroundImage: `url(${m.backdropUrl})` }
+      : { background: "linear-gradient(135deg, #0d1117, #161b22)" }
 
   return (
     <div className={styles.section}>
-      <div className={styles.hallWrap}>
-        <div className={styles.hallBg} style={{ backgroundImage: "url(/cinema-hall.png)" }} />
-        <div className={styles.fadeTop} />
-        <div className={styles.fadeBottom} />
+      {/* Layer A */}
+      <div
+        className={`${styles.backdrop} ${activeLayer === "A" ? styles.backdropVisible : styles.backdropHidden}`}
+        style={bgStyle(movies[layerA])}
+      />
+      {/* Layer B */}
+      <div
+        className={`${styles.backdrop} ${activeLayer === "B" ? styles.backdropVisible : styles.backdropHidden}`}
+        style={bgStyle(movies[layerB])}
+      />
+      <div className={styles.overlay} />
+      <div className={styles.fadeTop} />
+      <div className={styles.vignette} />
 
-        <h2 className={styles.title}>Now Playing</h2>
+      {/* Top-left label */}
+      <span className={styles.sectionLabel}>Now Showing</span>
 
-        <div className={styles.posterArea}>
-          {scrollable && (
-            <button className={`${styles.arrowBtn} ${styles.arrowLeft}`} onClick={goPrev}>&#8249;</button>
-          )}
+      {/* Side arrow buttons */}
+      <button className={styles.arrowLeft} onClick={() => switchTo(current === 0 ? total - 1 : current - 1)}>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
+      </button>
+      <button className={styles.arrowRight} onClick={() => switchTo((current + 1) % total)}>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
+      </button>
 
-          <div className={styles.posterClip}>
-            <div
-              className={`${styles.posterRow} ${!scrollable ? styles.posterRowCentered : ""}`}
-              style={{ transform: `translateX(-${offset * (220 + 28)}px)` }}
-            >
-            {movies.map(m => {
-              const release = m.projection.startTime
-                ? new Date(m.projection.startTime).toLocaleDateString("en-US", { month: "short", day: "numeric" })
-                : null
-              return (
-                <button key={m.id} className={styles.card} onClick={() => setSelected(m)}>
-                  <div className={styles.cardPoster}>
-                    {m.posterUrl && (
-                      <img src={m.posterUrl} alt={m.title} className={styles.cardImg} loading="lazy" />
-                    )}
-                  </div>
-                  <div className={styles.cardBody}>
-                    <h3 className={styles.cardTitle}>{m.title}</h3>
-                    <div className={styles.cardMeta}>
-                      <span className={styles.cardMetaItem}>
-                        <span className={styles.cardMetaIcon}>⏱</span>
-                        {formatDuration(m.duration)}
-                      </span>
-                      {release && (
-                        <span className={styles.cardMetaItem}>
-                          <span className={styles.cardMetaIcon}>📅</span>
-                          {release}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </button>
-              )
-            })}
-            </div>
+      {/* Center layout: poster with glass card beneath */}
+      <div className={styles.centerWrap}>
+        <div className={`${styles.showcase} ${visible ? styles.showcaseVisible : ""}`}>
+          <div className={styles.posterWrap}>
+            {movie.posterUrl ? (
+              <img
+                src={movie.posterUrl}
+                alt={movie.title}
+                className={styles.poster}
+              />
+            ) : (
+              <div className={styles.posterFallback} />
+            )}
           </div>
 
-          {scrollable && (
-            <button className={`${styles.arrowBtn} ${styles.arrowRight}`} onClick={goNext}>&#8250;</button>
-          )}
+          <div className={styles.card}>
+            {movie.genre && (
+              <span className={styles.genre}>{movie.genre.split(",")[0].trim()}</span>
+            )}
+            <h2 className={styles.title}>{movie.title}</h2>
+            <div className={styles.meta}>
+              <span>{formatDate(movie.projection.startTime)}</span>
+              <span className={styles.metaSep}>·</span>
+              <span>{formatTime(movie.projection.startTime)}</span>
+              <span className={styles.metaSep}>·</span>
+              <span>{movie.projection.hallName}</span>
+              <span className={styles.metaSep}>·</span>
+              <span>{formatDuration(movie.duration)}</span>
+              <span className={styles.metaSep}>·</span>
+              <span className={styles.priceInline}>from ${movie.projection.price.toFixed(2)}</span>
+            </div>
+            <div className={styles.actions}>
+              <Link href={`/bookings/${movie.projection.id}/seats`} className={styles.btnPrimary}>
+                Book Now
+              </Link>
+              <Link href={`/movies/${movie.id}`} className={styles.btnSecondary}>
+                View Details
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Modal */}
-      {selected && (
-        <div className={styles.modalOverlay} onClick={() => setSelected(null)}>
-          <div className={styles.modal} onClick={e => e.stopPropagation()}>
-            <div
-              className={styles.modalBg}
-              style={selected.backdropUrl ? { backgroundImage: `url(${selected.backdropUrl})` } : undefined}
-            />
-            <div className={styles.modalGradient} />
-            <button className={styles.modalClose} onClick={() => setSelected(null)}>×</button>
-
-            <div className={styles.modalContent}>
-              <div className={styles.modalPoster}>
-                {selected.posterUrl ? (
-                  <img src={selected.posterUrl} alt={selected.title} className={styles.modalPosterImg} />
-                ) : (
-                  <div className={styles.modalPosterPlaceholder} />
-                )}
-              </div>
-
-              <div className={styles.modalInfo}>
-                {selected.genre && (
-                  <div className={styles.modalGenres}>
-                    {selected.genre.split(",").map(g => g.trim()).filter(Boolean).map(g => (
-                      <span key={g} className={styles.modalGenreBadge}>{g}</span>
-                    ))}
-                  </div>
-                )}
-
-                <h3 className={styles.modalTitle}>{selected.title}</h3>
-                <p className={styles.modalDesc}>{selected.description || "No description available."}</p>
-
-                <div className={styles.modalStats}>
-                  {[
-                    { icon: "⏱", value: formatDuration(selected.duration) },
-                    { icon: "🕐", value: formatTime(selected.projection.startTime) },
-                    { icon: "🏛", value: selected.projection.hallName },
-                    { icon: "🎟", value: formatPrice(selected.projection.price) },
-                  ].map(s => (
-                    <div key={s.icon} className={styles.modalStat}>
-                      <span className={styles.modalStatIcon}>{s.icon}</span>
-                      <span className={styles.modalStatValue}>{s.value}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className={styles.modalActions}>
-                  <Link href={`/bookings/${selected.projection.id}/seats`} className={styles.modalBookBtn}>
-                    Book Now
-                  </Link>
-                  <Link href={`/movies/${selected.id}`} className={styles.modalMoreBtn}>
-                    More info
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
+      {/* Centered dots + counter */}
+      <div className={styles.bottomBar}>
+        <div className={styles.dots}>
+          {movies.map((m, i) => (
+            <button
+              key={m.id}
+              className={`${styles.dot} ${i === current ? styles.dotActive : ""}`}
+              onClick={() => switchTo(i)}
+            >
+              {i === current && <span className={styles.dotTitle}>{m.title}</span>}
+            </button>
+          ))}
         </div>
-      )}
+        <span className={styles.counter}>
+          {pad(current + 1)} <span className={styles.counterSep}>/</span> {pad(total)}
+        </span>
+      </div>
     </div>
   )
 }

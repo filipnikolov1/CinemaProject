@@ -33,27 +33,6 @@ export async function POST(req: Request) {
     const duration = movie.duration > 0 ? movie.duration : 90
     const end = new Date(start.getTime() + duration * 60 * 1000)
 
-    // Check for overlapping projections in the same hall
-    const overlap = await prisma.projection.findFirst({
-      where: {
-        hallId: Number(hallId),
-        AND: [
-          // Existing projection starts before our new one ends
-          { startTime: { lt: end } },
-          // Existing projection ends after our new one starts
-          // We calculate end time by joining with movie duration
-          {
-            movie: {
-              // existing start + existing duration > new start
-              // We can't do this math in Prisma directly so we fetch
-              // candidates and filter in JS below
-            }
-          }
-        ]
-      },
-      include: { movie: true },
-    })
-
     // Fetch all projections in this hall and check overlap in JS
     const hallProjections = await prisma.projection.findMany({
       where: { hallId: Number(hallId) },
@@ -86,8 +65,7 @@ export async function POST(req: Request) {
     })
 
     return NextResponse.json(projection, { status: 201 })
-  } catch (error) {
-    console.error(error)
+  } catch {
     return NextResponse.json({ error: "Failed to create projection" }, { status: 500 })
   }
 }

@@ -1,24 +1,26 @@
 import { prisma } from "@/lib/db";
-import MovieCard from "@/components/MovieCard";
-import MovieFilters from "@/components/MovieFilters";
 import Link from "next/link";
 import { Movie } from "@prisma/client";
+import MovieFilters from "@/components/MovieFilters";
+import styles from "./movies.module.scss";
 
 type MoviesPageProps = {
     searchParams: Promise<{
         filter?: string;
         page?: string;
+        search?: string;
     }>;
 };
 
 export default async function MoviesPage({ searchParams }: MoviesPageProps) {
     const params = await searchParams;
     const filter = params.filter;
+    const search = params.search?.trim() || "";
     const currentPage = Number(params.page) || 1;
 
     const moviesPerPage = 16;
 
-    let where = {};
+    let where: Record<string, unknown> = {};
 
     if (filter === "popular") {
         where = { isPopular: true };
@@ -34,6 +36,10 @@ export default async function MoviesPage({ searchParams }: MoviesPageProps) {
 
     if (filter === "upcoming") {
         where = { isUpcoming: true };
+    }
+
+    if (search) {
+        where.title = { contains: search, mode: "insensitive" };
     }
 
     const totalMovies = await prisma.movie.count({ where });
@@ -65,32 +71,47 @@ export default async function MoviesPage({ searchParams }: MoviesPageProps) {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-black via-zinc-950 to-purple-950 text-white">
-            <div className="max-w-7xl mx-auto px-6 py-10">
-                <div className="mb-8">
-                    <p className="text-pink-400 uppercase tracking-[0.3em] text-sm mb-2">
-                        Cinema Collection
-                    </p>
-                    <h1 className="text-4xl md:text-5xl font-extrabold mb-3">Movies</h1>
-                    <p className="text-gray-400 text-lg">
+        <div className={styles.page}>
+            <div className={styles.inner}>
+                <div className={styles.header}>
+                    <p className={styles.eyebrow}>Cinema Collection</p>
+                    <h1 className={styles.title}>Movies</h1>
+                    <p className={styles.subtitle}>
                         Discover popular, top rated, now playing and upcoming movies.
                     </p>
                 </div>
 
                 <MovieFilters />
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-7 mt-8">
+                <div className={styles.grid}>
                     {movies.map((movie: Movie) => (
-                        <MovieCard key={movie.id} movie={movie} />
+                        <Link key={movie.id} href={`/movies/${movie.id}`} className={styles.card}>
+                            <img
+                                src={movie.posterUrl || "/no-image.jpg"}
+                                alt={movie.title}
+                                className={styles.cardPoster}
+                            />
+                            <div className={styles.cardBody}>
+                                <h2 className={styles.cardTitle}>{movie.title}</h2>
+                                <p className={styles.cardMeta}>
+                                    {movie.genre || "Unknown genre"} &middot; {movie.duration} min
+                                </p>
+                            </div>
+                            <span className={styles.cardButton}>View details</span>
+                        </Link>
                     ))}
                 </div>
 
+                {movies.length === 0 && (
+                    <p className={styles.empty}>No movies found.</p>
+                )}
+
                 {totalPages > 1 && (
-                    <div className="flex justify-center items-center gap-2 mt-10 flex-wrap">
+                    <div className={styles.pagination}>
                         {currentPage > 1 && (
                             <Link
                                 href={buildPageLink(currentPage - 1)}
-                                className="px-4 py-2 rounded-lg bg-white/10 border border-white/10 hover:bg-white/20 transition"
+                                className={styles.pageBtn}
                             >
                                 &lt;
                             </Link>
@@ -100,11 +121,11 @@ export default async function MoviesPage({ searchParams }: MoviesPageProps) {
                             <>
                                 <Link
                                     href={buildPageLink(1)}
-                                    className="px-4 py-2 rounded-lg bg-white/10 border border-white/10 hover:bg-white/20 transition"
+                                    className={styles.pageBtn}
                                 >
                                     1
                                 </Link>
-                                {startPage > 2 && <span className="px-2 text-gray-400">...</span>}
+                                {startPage > 2 && <span className={styles.pageEllipsis}>&hellip;</span>}
                             </>
                         )}
 
@@ -112,10 +133,8 @@ export default async function MoviesPage({ searchParams }: MoviesPageProps) {
                             <Link
                                 key={page}
                                 href={buildPageLink(page)}
-                                className={`px-4 py-2 rounded-lg border transition ${
-                                    currentPage === page
-                                        ? "bg-pink-600 border-pink-600 text-white"
-                                        : "bg-white/10 border-white/10 hover:bg-white/20 text-white"
+                                className={`${styles.pageBtn} ${
+                                    currentPage === page ? styles.pageBtnActive : ""
                                 }`}
                             >
                                 {page}
@@ -125,11 +144,11 @@ export default async function MoviesPage({ searchParams }: MoviesPageProps) {
                         {endPage < totalPages && (
                             <>
                                 {endPage < totalPages - 1 && (
-                                    <span className="px-2 text-gray-400">...</span>
+                                    <span className={styles.pageEllipsis}>&hellip;</span>
                                 )}
                                 <Link
                                     href={buildPageLink(totalPages)}
-                                    className="px-4 py-2 rounded-lg bg-white/10 border border-white/10 hover:bg-white/20 transition"
+                                    className={styles.pageBtn}
                                 >
                                     {totalPages}
                                 </Link>
@@ -139,7 +158,7 @@ export default async function MoviesPage({ searchParams }: MoviesPageProps) {
                         {currentPage < totalPages && (
                             <Link
                                 href={buildPageLink(currentPage + 1)}
-                                className="px-4 py-2 rounded-lg bg-white/10 border border-white/10 hover:bg-white/20 transition"
+                                className={styles.pageBtn}
                             >
                                 &gt;
                             </Link>

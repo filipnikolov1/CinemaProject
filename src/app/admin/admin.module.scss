@@ -329,6 +329,21 @@
   }
 }
 
+.homeButton {
+  font-size: 13px;
+  color: #8b949e;
+  text-decoration: none;
+  padding: 5px 12px;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  transition: border-color 0.15s, color 0.15s;
+
+  &:hover {
+    border-color: #8b949e;
+    color: #e6edf3;
+  }
+}
+
 .badgeVip {
   font-size: 9px;
   font-weight: 700;

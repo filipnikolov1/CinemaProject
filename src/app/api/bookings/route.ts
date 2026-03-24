@@ -60,18 +60,6 @@ export async function POST(req:Request){
             return NextResponse.json({error:"This seat is already booked."},{status:409})
         }
 
-        // //proveruvame dali korisnikot ima vekje napraveno rezervacija za ovaa proekcija
-        // const alreadyBooked=await prisma.booking.findFirst({
-        //     where:{
-        //         projectionId:Number(projectionId),
-        //         userId:user.id,
-        //     },
-        // })
-
-        // if(alreadyBooked){
-        //     return NextResponse.json({error:"You already have a reservation for this projection."},{status:409})
-        // }
-
         const booking=await prisma.booking.create({
             data:{
                 projectionId:Number(projectionId),
@@ -92,8 +80,7 @@ export async function POST(req:Request){
             },
         })
         return NextResponse.json(booking,{status:201})
-    } catch (error) {
-        console.error(error)
+    } catch {
         return NextResponse.json({error:"Failed to create booking."},{status:500})
     }
 }

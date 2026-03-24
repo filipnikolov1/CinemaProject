@@ -72,8 +72,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     })
 
     return NextResponse.json(projection)
-  } catch (error) {
-    console.error(error)
+  } catch {
     return NextResponse.json({ error: "Failed to update projection" }, { status: 500 })
   }
 }
