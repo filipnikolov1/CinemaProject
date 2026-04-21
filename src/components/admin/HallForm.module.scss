@@ -1,0 +1,127 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.error {
+  background: #2d1515;
+  border: 1px solid #6e1a1a;
+  color: #ff6b6b;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 13px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  color: #8b949e;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.input {
+  width: 100%;
+  padding: 10px 14px;
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  color: #e6edf3;
+  font-size: 13px;
+  outline: none;
+  box-sizing: border-box;
+  font-family: inherit;
+  transition: border-color 0.15s;
+
+  &:focus { border-color: #58a6ff; }
+  &::placeholder { color: #484f58; }
+}
+
+.inputWithPrefix {
+  display: flex;
+  align-items: center;
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 0.15s;
+
+  &:focus-within { border-color: #58a6ff; }
+}
+
+.inputPrefix {
+  padding: 10px 12px;
+  color: #8b949e;
+  font-size: 13px;
+  font-weight: 500;
+  border-right: 1px solid #21262d;
+  background: #161b22;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.inputInner {
+  flex: 1;
+  padding: 10px 14px;
+  background: transparent;
+  border: none;
+  color: #e6edf3;
+  font-size: 13px;
+  outline: none;
+  font-family: inherit;
+
+  &::placeholder { color: #484f58; }
+}
+
+.hint {
+  color: #484f58;
+  font-size: 12px;
+}
+
+.divider {
+  height: 1px;
+  background: #21262d;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.submitButton {
+  flex: 1;
+  padding: 12px;
+  background: #e6edf3;
+  border: none;
+  border-radius: 8px;
+  color: #0d1117;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+
+  &:hover { background: #fff; }
+  &:disabled { background: #21262d; color: #8b949e; cursor: not-allowed; }
+}
+
+.cancelButton {
+  padding: 12px 20px;
+  background: none;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  color: #8b949e;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.15s, color 0.15s;
+
+  &:hover { border-color: #8b949e; color: #e6edf3; }
+}

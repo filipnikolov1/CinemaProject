@@ -1,0 +1,241 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 28px 20px;
+}
+
+.screenWrap {
+  width: 75%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+  filter: drop-shadow(0 0 12px rgba(88, 166, 255, 0.4));
+}
+
+.screen {
+  width: 100%;
+  padding: 8px 0;
+  text-align: center;
+  font-size: 10px;
+  letter-spacing: 5px;
+  color: #8b949e;
+  clip-path: polygon(5% 0%, 95% 0%, 100% 100%, 0% 100%);
+  background: linear-gradient(to bottom, #2a3a4a, #161b22);
+  border-bottom: 2px solid #58a6ff;
+  box-shadow: 0 4px 24px rgba(88, 166, 255, 0.35),
+              0 0 60px rgba(88, 166, 255, 0.15);
+}
+
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 8px;
+}
+
+.rowLabel {
+  width: 44px;
+  font-size: 10px;
+  color: #484f58;
+  text-align: center;
+  flex-shrink: 0;
+  letter-spacing: 0.2px;
+}
+
+.rowSpacer {
+  width: 44px;
+  flex-shrink: 0;
+}
+
+.seatGroup {
+  display: flex;
+  gap: 5px;
+}
+
+.seatGroupFull {
+  display: flex;
+  gap: 5px;
+  width: calc(5 * 28px + 4 * 5px + 20px + 5 * 28px + 4 * 5px);
+  justify-content: center;
+}
+
+.aisle {
+  width: 20px;
+  flex-shrink: 0;
+}
+
+.seat {
+  width: 28px;
+  height: 32px;
+  background: #21262d;
+  border: 1px solid #30363d;
+  border-radius: 6px 6px 2px 2px;
+  cursor: pointer;
+  transition: background 0.1s, border-color 0.1s, transform 0.12s;
+  flex-shrink: 0;
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: #2d333b;
+    border-radius: 6px 6px 0 0;
+    transition: background 0.1s;
+  }
+
+  &:hover:not(:disabled) {
+    background: #2d333b;
+    border-color: #8b949e;
+    transform: translateY(-2px);
+
+    &::before {
+      background: #3d4450;
+    }
+  }
+
+  &.selected {
+    background: #e50914;
+    border-color: #e50914;
+
+    &::before {
+      background: #c4070f;
+    }
+
+    &:hover {
+      background: #c4070f;
+      transform: translateY(-2px);
+    }
+  }
+
+  &.taken {
+    background: #161b22;
+    border-color: #21262d;
+    cursor: not-allowed;
+    opacity: 0.35;
+
+    &::before {
+      background: #1c2128;
+    }
+  }
+
+  &.vip {
+    width: 28px;
+    border-color: #4a3500;
+    background: #1a1500;
+
+    &::before {
+      background: #2a1f00;
+    }
+
+    &:hover:not(:disabled) {
+      border-color: #f0a500;
+      background: #2a1f00;
+
+      &::before {
+        background: #3a2f00;
+      }
+    }
+
+    &.selected {
+      background: #f0a500;
+      border-color: #f0a500;
+
+      &::before {
+        background: #c88a00;
+      }
+
+      &:hover {
+        background: #c88a00;
+        transform: translateY(-2px);
+      }
+    }
+
+    &.taken {
+      background: #0f0d00;
+      border-color: #2a1f00;
+      opacity: 0.35;
+    }
+  }
+}
+
+.seatPlaceholder {
+  width: 28px;
+  height: 32px;
+  flex-shrink: 0;
+  visibility: hidden;
+}
+
+.legend {
+  display: flex;
+  gap: 24px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #8b949e;
+}
+
+.legendSeat {
+  width: 16px;
+  height: 18px;
+  background: #21262d;
+  border: 1px solid #30363d;
+  border-radius: 4px 4px 1px 1px;
+  flex-shrink: 0;
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: #2d333b;
+    border-radius: 4px 4px 0 0;
+  }
+}
+
+.legendSelected {
+  background: #e50914;
+  border-color: #e50914;
+
+  &::before {
+    background: #c4070f;
+  }
+}
+
+.legendVip {
+  width: 22px;
+  background: #1a1500;
+  border-color: #4a3500;
+
+  &::before {
+    background: #2a1f00;
+  }
+}
+
+.legendTaken {
+  background: #161b22;
+  border-color: #21262d;
+  opacity: 0.35;
+}

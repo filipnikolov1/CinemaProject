@@ -1,0 +1,294 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dateTimeRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.dateButton {
+  width: 100%;
+  padding: 10px 14px;
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  color: #e6edf3;
+  font-size: 13px;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  &:hover { border-color: #58a6ff; }
+  &.open { border-color: #58a6ff; }
+  &.placeholder { color: #484f58; }
+}
+
+.calendarWrapper {
+  position: absolute;
+  z-index: 200;
+  top: calc(100% + 6px);
+  left: 0;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  min-width: 280px;
+}
+
+.calendarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.calendarTitle {
+  color: #e6edf3;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.navButton {
+  background: none;
+  border: 1px solid #30363d;
+  color: #8b949e;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s, color 0.15s;
+
+  &:hover { border-color: #8b949e; color: #e6edf3; }
+}
+
+.weekDays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 6px;
+}
+
+.weekDay {
+  text-align: center;
+  font-size: 11px;
+  color: #8b949e;
+  font-weight: 500;
+  padding: 4px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.daysGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #8b949e;
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+  transition: background 0.1s, color 0.1s;
+
+  &:hover { background: #21262d; color: #e6edf3; }
+
+  &.today {
+    color: #58a6ff;
+    font-weight: 600;
+  }
+
+  &.selected {
+    background: #58a6ff;
+    color: #0d1117;
+    font-weight: 600;
+
+    &:hover { background: #79c0ff; }
+  }
+
+  &.otherMonth { color: #30363d; }
+  &.disabled { opacity: 0.3; cursor: not-allowed; &:hover { background: none; } }
+  &.empty { cursor: default; &:hover { background: none; } }
+}
+
+// Time input
+.timeWrapper {
+  position: relative;
+}
+
+.timeInput {
+  width: 100%;
+  padding: 10px 14px;
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  color: #e6edf3;
+  font-size: 13px;
+  outline: none;
+  box-sizing: border-box;
+  font-family: inherit;
+  transition: border-color 0.15s;
+  appearance: none;
+
+  &:focus { border-color: #58a6ff; }
+  &::placeholder { color: #484f58; }
+
+  &::-webkit-calendar-picker-indicator {
+    filter: invert(0.5);
+    cursor: pointer;
+    opacity: 0.5;
+
+    &:hover { opacity: 1; }
+  }
+}
+
+.fieldIcon {
+  color: #484f58;
+  font-size: 13px;
+}
+
+.relative {
+  position: relative;
+}
+
+// Time picker
+.timeButton {
+  width: 100%;
+  padding: 10px 14px;
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 8px;
+  color: #e6edf3;
+  font-size: 13px;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  &:hover { border-color: #58a6ff; }
+  &.open { border-color: #58a6ff; }
+  &.placeholder { color: #484f58; }
+}
+
+.timeDropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  z-index: 200;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+.timeColumns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 1px solid #21262d;
+}
+
+.timeColumnHeader {
+  padding: 10px;
+  text-align: center;
+  font-size: 11px;
+  color: #8b949e;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  font-weight: 500;
+  border-bottom: 1px solid #21262d;
+
+  &:first-child {
+    border-right: 1px solid #21262d;
+  }
+}
+
+.timeColumnHeaders {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.timeScroll {
+  height: 200px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #30363d transparent;
+
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb { background: #30363d; border-radius: 2px; }
+
+  &:first-child {
+    border-right: 1px solid #21262d;
+  }
+}
+
+.timeOption {
+  display: block;
+  width: 100%;
+  padding: 9px 14px;
+  background: none;
+  border: none;
+  color: #8b949e;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.1s, color 0.1s;
+
+  &:hover {
+    background: #21262d;
+    color: #e6edf3;
+  }
+
+  &.selectedTime {
+    background: #58a6ff;
+    color: #0d1117;
+    font-weight: 600;
+  }
+}
+
+.timeConfirm {
+  padding: 10px 16px;
+  border-top: 1px solid #21262d;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.timeConfirmBtn {
+  background: #e6edf3;
+  color: #0d1117;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+
+  &:hover { background: #fff; }
+}

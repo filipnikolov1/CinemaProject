@@ -1,0 +1,56 @@
+.confirmRow {
+  display: flex;
+  gap: 8px;
+}
+
+.confirmButton {
+  background: #b91c1c;
+  border: none;
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+
+  &:hover {
+    background: #dc2626;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.cancelButton {
+  background: none;
+  border: 1px solid #30363d;
+  color: #8b949e;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: inherit;
+
+  &:hover {
+    border-color: #8b949e;
+    color: #e6edf3;
+  }
+}
+
+.deleteButton {
+  background: none;
+  border: 1px solid #6e1a1a;
+  color: #f85149;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: inherit;
+
+  &:hover {
+    background: #2d1515;
+  }
+}
