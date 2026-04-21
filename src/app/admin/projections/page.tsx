@@ -93,7 +93,6 @@ export default async function ProjectionsPage({
         <Link href="/admin/projections/new" className={styles.addButtonLarge}>+ Add Projection</Link>
       </div>
 
-      {/* Filters */}
       <form className={styles.filterBar}>
         <input
           type="text"
