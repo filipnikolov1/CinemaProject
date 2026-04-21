@@ -5,7 +5,7 @@ import DeleteHallButton from "@/components/admin/DeleteHallButton"
 import styles from "../../admin.module.scss"
 
 export default async function EditHallPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params  // ← await params
+  const { id } = await params
 
   const hall = await prisma.hall.findUnique({
     where: { id: Number(id) },

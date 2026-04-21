@@ -5,7 +5,7 @@ import DeleteProjectionButton from "@/components/admin/DeleteProjectionButton"
 import styles from "../../admin.module.scss"
 
 export default async function EditProjectionPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params  // ← await params
+  const { id } = await params 
 
   const projection = await prisma.projection.findUnique({
     where: { id: Number(id) },
